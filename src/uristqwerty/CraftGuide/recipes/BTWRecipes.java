@@ -64,21 +64,21 @@ public class BTWRecipes extends CraftGuideAPIObject implements RecipeProvider
 			crucible = new ItemStack((Block)btw.getField("fcCrucible").get(null));
 			bellows = new ItemStack((Block)btw.getField("fcBellows").get(null));
 			hibachi = new ItemStack((Block)btw.getField("fcBBQ").get(null));
-			soulUrn = new ItemStack((Item)btw.getField("fcSoulUrn").get(null));
-			urn = new ItemStack((Item)btw.getField("fcUrn").get(null));
+			soulUrn = new ItemStack((Item)btw.getField("fcItemSoulUrn").get(null));
+			urn = new ItemStack((Item)btw.getField("fcItemUrn").get(null));
 			unfiredPotteryClass = Class.forName(classPackagePrefix+"FCBlockUnfiredPottery");
 			endStoneClass = Class.forName(classPackagePrefix+"FCBlockEndStone");
 			unfiredBrickClass = Class.forName(classPackagePrefix+"FCBlockUnfiredBrick");
 			chunkOreIronClass = Class.forName(classPackagePrefix+"FCBlockChunkOreIron");
 			chunkOreGoldClass = Class.forName(classPackagePrefix+"FCBlockChunkOreGold");
 
-			soap = (Item)btw.getField("fcSoap").get(null);
-			potash = (Item)btw.getField("fcPotash").get(null);
+			soap = (Item)btw.getField("fcItemSoap").get(null);
+			potash = (Item)btw.getField("fcItemPotash").get(null);
 			sawDust = (Item)btw.getField("fcItemSawDust").get(null);
-			soulDust = (Item)btw.getField("fcSoulDust").get(null);
-			hellfireDust = (Item)btw.getField("fcHellfireDust").get(null);
-			groundNetherrack = (Item)btw.getField("fcGroundNetherrack").get(null);
-			concentratedHellfire = (Item)btw.getField("fcConcentratedHellfire").get(null);
+			soulDust = (Item)btw.getField("fcItemSoulDust").get(null);
+			hellfireDust = (Item)btw.getField("fcItemHellfireDust").get(null);
+			groundNetherrack = (Item)btw.getField("fcItemGroundNetherrack").get(null);
+			concentratedHellfire = (Item)btw.getField("fcItemConcentratedHellfire").get(null);
 
 			/* Setting these to null isn't really needed here, but it means that no
 			 *  extra work is necessary in the future if/when the config settings can
@@ -523,7 +523,7 @@ public class BTWRecipes extends CraftGuideAPIObject implements RecipeProvider
 		RecipeTemplate template = generator.createRecipeTemplate(recipeSlots, hopper);
 		ItemStack groundNetherrackStack = new ItemStack(groundNetherrack, 8);
 		ItemStack hellfireDustStack = new ItemStack(hellfireDust, 8);
-		ItemStack wicker = new ItemStack((Item)Class.forName(classPackagePrefix+"FCBetterThanWolves").getField("fcItemWickerPane").get(null));
+		ItemStack wicker = new ItemStack((Block)Class.forName(classPackagePrefix+"FCBetterThanWolves").getField("fcBlockWickerPane").get(null));
 		ItemStack slowsand = new ItemStack(Block.slowSand);
 		ItemStack soulDustStack = new ItemStack(soulDust, 8);
 		ItemStack sawDustStack = new ItemStack(sawDust, 8);
@@ -554,7 +554,7 @@ public class BTWRecipes extends CraftGuideAPIObject implements RecipeProvider
 		RecipeTemplate template = generator.createRecipeTemplate(recipeSlots, saw);
 
 		ItemStack bloodWood = new ItemStack((Block)Class.forName(classPackagePrefix+"FCBetterThanWolves").getField("fcBloodWood").get(null));
-		ItemStack gears = new ItemStack((Item)Class.forName(classPackagePrefix+"FCBetterThanWolves").getField("fcGear").get(null));
+		ItemStack gears = new ItemStack((Item)Class.forName(classPackagePrefix+"FCBetterThanWolves").getField("fcItemGear").get(null));
 		ItemStack soulDustStack = new ItemStack(soulDust, 2);
 		ItemStack sawDustStack = new ItemStack(sawDust, 2);
 		gears.stackSize = 2;
