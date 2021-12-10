@@ -32,6 +32,7 @@ public class BTWRecipes {
 		new AnvilRecipes();
 		new HopperFilterRecipes();
 		new KilnRecipes();
+		new PistonPackingRecipes();
 	}
 	
 	/*
