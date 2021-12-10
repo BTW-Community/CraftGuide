@@ -34,6 +34,7 @@ public class BTWRecipes {
 		new KilnRecipes();
 		new PistonPackingRecipes();
 		new SawRecipes();
+		new TurntableRecipes();
 	}
 	
 	/*
