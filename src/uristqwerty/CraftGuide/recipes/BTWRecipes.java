@@ -30,6 +30,7 @@ public class BTWRecipes {
 		new BulkRecipes(2, 1, crucible, FCCraftingManagerCrucible.getInstance());
 		new BulkRecipes(2, 1, new ItemStack[] {bellows, crucible, hibachi}, FCCraftingManagerCrucibleStoked.getInstance());
 		new AnvilRecipes();
+		new HopperFilterRecipes();
 	}
 	
 	/*
