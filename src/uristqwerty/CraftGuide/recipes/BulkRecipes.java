@@ -66,8 +66,9 @@ public class BulkRecipes extends CraftGuideAPIObject implements RecipeProvider {
 				ItemStack[] crafting = new ItemStack[slots.length];
 				
 				List<ItemStack> inputs = recipe.getCraftingIngrediantList();
+				int j = inputs.size() == 1 ? 1 : 0;
 				for (int i = 0; i < inputs.size() && i < inputWidth*inputHeight; i++) {
-					crafting[i] = inputs.get(i);
+					crafting[i + j] = inputs.get(i);
 				}
 
 				for (int i = 0; i < machines.length; i++) {
@@ -77,8 +78,9 @@ public class BulkRecipes extends CraftGuideAPIObject implements RecipeProvider {
 				List<ItemStack> outputs = recipe.getCraftingOutputList();
 				// Condensing is required for the Companion Cube MillStone recipe
 				BTWRecipes.condenseItemStackList(outputs);
+				j = outputs.size() == 1 ? 1 : 0;
 				for (int row = 0; row < outputHeight && row < outputs.size(); row++) {
-					crafting[inputWidth*inputHeight + machines.length + row] = outputs.get(row);
+					crafting[inputWidth*inputHeight + machines.length + row + j] = outputs.get(row);
 				}
 				
 				generator.addRecipe(template, crafting);
