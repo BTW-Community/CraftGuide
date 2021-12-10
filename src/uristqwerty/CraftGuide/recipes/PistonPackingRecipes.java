@@ -60,7 +60,7 @@ public class PistonPackingRecipes extends CraftGuideAPIObject implements RecipeP
 		int xOffset = 14;
 		
 		for (int i = 0; i < 3; i++) {
-			slots[i] = new ItemSlot(xOffset, i * 18 + 3, 16, 16);
+			slots[i] = new ItemSlot(xOffset, i * 18 + 3, 16, 16, true);
 		}
 		slots[3] = new ItemSlot(18 + xOffset, 21, 16, 16).setSlotType(SlotType.MACHINE_SLOT);
 		slots[4] = new ItemSlot(36 + xOffset, 21, 16, 16).setSlotType(SlotType.OUTPUT_SLOT);

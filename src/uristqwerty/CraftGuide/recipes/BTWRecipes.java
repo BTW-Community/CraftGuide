@@ -33,6 +33,7 @@ public class BTWRecipes {
 		new HopperFilterRecipes();
 		new KilnRecipes();
 		new PistonPackingRecipes();
+		new SawRecipes();
 	}
 	
 	/*
