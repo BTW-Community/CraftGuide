@@ -1,22 +1,35 @@
 package uristqwerty.CraftGuide.recipes;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import net.minecraft.src.Item;
+import net.minecraft.src.FCBetterThanWolves;
+import net.minecraft.src.FCCraftingManagerCauldron;
+import net.minecraft.src.FCCraftingManagerCauldronStoked;
+import net.minecraft.src.FCCraftingManagerCrucible;
+import net.minecraft.src.FCCraftingManagerCrucibleStoked;
+import net.minecraft.src.FCCraftingManagerMillStone;
 import net.minecraft.src.ItemStack;
 
 public class BTWRecipes {
+	// Used for stoked fire recipes
+	ItemStack bellows = new ItemStack(FCBetterThanWolves.fcBellows);
+	ItemStack hibachi = new ItemStack(FCBetterThanWolves.fcBBQ);
+	
+	ItemStack millStone = new ItemStack(FCBetterThanWolves.fcMillStone);
+	ItemStack cauldron = new ItemStack(FCBetterThanWolves.fcCauldron);
+	ItemStack crucible = new ItemStack(FCBetterThanWolves.fcCrucible);
+	
 	public BTWRecipes() {
-		new MillStoneRecipes();
-		new CauldronRecipes();
-		new CauldronStokedRecipes();
+		new BulkRecipes(1, 1, millStone, FCCraftingManagerMillStone.getInstance(), 13);
+		new BulkRecipes(2, 1, cauldron, FCCraftingManagerCauldron.getInstance());
+		new BulkRecipes(2, 1, new ItemStack[] {bellows, cauldron, hibachi}, FCCraftingManagerCauldronStoked.getInstance());
+		new BulkRecipes(2, 1, crucible, FCCraftingManagerCrucible.getInstance());
+		new BulkRecipes(2, 1, new ItemStack[] {bellows, crucible, hibachi}, FCCraftingManagerCrucibleStoked.getInstance());
+		new AnvilRecipes();
 	}
 	
 	/*
