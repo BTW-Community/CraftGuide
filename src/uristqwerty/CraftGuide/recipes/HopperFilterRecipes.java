@@ -24,7 +24,7 @@ public class HopperFilterRecipes extends CraftGuideAPIObject implements RecipePr
 
 	@Override
 	public void generateRecipes(RecipeGenerator generator) {
-		slots = createSlots();
+		createSlots();
 		RecipeTemplate template = generator.createRecipeTemplate(slots, hopper);
 		
 		try {
@@ -60,8 +60,8 @@ public class HopperFilterRecipes extends CraftGuideAPIObject implements RecipePr
 		}
 	}
 	
-	private Slot[] createSlots() {
-		Slot[] slots = new ItemSlot[6];
+	private void createSlots() {
+		slots = new ItemSlot[6];
 		int xOffset = 14;
 		
 		for (int i = 0; i < 2; i++) {
@@ -73,8 +73,5 @@ public class HopperFilterRecipes extends CraftGuideAPIObject implements RecipePr
 		for (int i = 0; i < 2; i++) {
 			slots[4 + i] = new ItemSlot(36 + xOffset, i * 18 + 3, 16, 16, true).setSlotType(SlotType.OUTPUT_SLOT);
 		}
-		
-		return slots;
 	}
-
 }
