@@ -13,6 +13,9 @@ import net.minecraft.src.FCCraftingManagerCrucible;
 import net.minecraft.src.FCCraftingManagerCrucibleStoked;
 import net.minecraft.src.FCCraftingManagerMillStone;
 import net.minecraft.src.ItemStack;
+import uristqwerty.CraftGuide.api.ItemSlot;
+import uristqwerty.CraftGuide.api.Slot;
+import uristqwerty.CraftGuide.api.SlotType;
 
 public class BTWRecipes {
 	// Used for stoked fire recipes
@@ -24,17 +27,51 @@ public class BTWRecipes {
 	ItemStack crucible = new ItemStack(FCBetterThanWolves.fcCrucible);
 	
 	public BTWRecipes() {
-		new BulkRecipes(millStone, FCCraftingManagerMillStone.getInstance());
-		new BulkRecipes(cauldron, FCCraftingManagerCauldron.getInstance());
-		new BulkRecipes(new ItemStack[] {bellows, cauldron, hibachi}, FCCraftingManagerCauldronStoked.getInstance());
-		new BulkRecipes(crucible, FCCraftingManagerCrucible.getInstance());
-		new BulkRecipes(new ItemStack[] {bellows, crucible, hibachi}, FCCraftingManagerCrucibleStoked.getInstance());
+		new BulkRecipes(FCCraftingManagerMillStone.getInstance(), millStone);
+		new BulkRecipes(FCCraftingManagerCauldron.getInstance(), cauldron);
+		new BulkRecipes(FCCraftingManagerCauldronStoked.getInstance(), 1, bellows, cauldron, hibachi);
+		new BulkRecipes(FCCraftingManagerCrucible.getInstance(), crucible);
+		new BulkRecipes(FCCraftingManagerCrucibleStoked.getInstance(), 1, bellows, crucible, hibachi);
 		new AnvilRecipes();
 		new HopperFilterRecipes();
 		new KilnRecipes();
 		new PistonPackingRecipes();
 		new SawRecipes();
 		new TurntableRecipes();
+	}
+	
+	public static Slot[] createSlots(int inputSize, int outputSize, int machineH) {
+		int inputW = (int) Math.ceil(inputSize / 3.0);
+		int inputH = Math.min(inputSize, 3);
+		int inputArea = inputW * inputH;
+		
+		int outputW = (int) Math.ceil(outputSize / 3.0);
+		int outputH = Math.min(outputSize, 3);
+		int outputArea = outputW * outputH;
+		
+		Slot[] slots = new ItemSlot[inputArea + machineH + outputArea];
+		
+		int maxHeight = Math.max(Math.max(inputH, outputH), machineH);
+		
+		int inputShift = (maxHeight - inputH) * 9;
+		int outputShift = (maxHeight - outputH) * 9;
+		int machineShift = (maxHeight - machineH) * 9;
+		
+		for (int col = 0; col < inputW; col++) {
+			for (int row = 0; row < inputH; row++) {
+				slots[inputH * col + row] = new ItemSlot(col * 18, row * 18 + inputShift, 16, 16, true);
+			}
+		}
+		for (int row = 0; row < machineH; row++) {
+			slots[inputArea + row] = new ItemSlot(inputW * 18, row * 18 + machineShift, 16, 16).setSlotType(SlotType.MACHINE_SLOT);
+		}
+		for (int col = 0; col < outputW; col++) {
+			for (int row = 0; row < outputH; row++) {
+				slots[inputArea + machineH + outputH * col + row] = new ItemSlot((inputW + 1 + col) * 18, row * 18 + outputShift, 16, 16, true).setSlotType(SlotType.OUTPUT_SLOT);
+			}
+		}
+		
+		return slots;
 	}
 	
 	/*
