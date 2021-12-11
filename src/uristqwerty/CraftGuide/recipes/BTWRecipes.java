@@ -24,11 +24,11 @@ public class BTWRecipes {
 	ItemStack crucible = new ItemStack(FCBetterThanWolves.fcCrucible);
 	
 	public BTWRecipes() {
-		new BulkRecipes(1, 1, millStone, FCCraftingManagerMillStone.getInstance(), 13);
-		new BulkRecipes(2, 1, cauldron, FCCraftingManagerCauldron.getInstance());
-		new BulkRecipes(2, 1, new ItemStack[] {bellows, cauldron, hibachi}, FCCraftingManagerCauldronStoked.getInstance());
-		new BulkRecipes(2, 1, crucible, FCCraftingManagerCrucible.getInstance());
-		new BulkRecipes(2, 1, new ItemStack[] {bellows, crucible, hibachi}, FCCraftingManagerCrucibleStoked.getInstance());
+		new BulkRecipes(millStone, FCCraftingManagerMillStone.getInstance());
+		new BulkRecipes(cauldron, FCCraftingManagerCauldron.getInstance());
+		new BulkRecipes(new ItemStack[] {bellows, cauldron, hibachi}, FCCraftingManagerCauldronStoked.getInstance());
+		new BulkRecipes(crucible, FCCraftingManagerCrucible.getInstance());
+		new BulkRecipes(new ItemStack[] {bellows, crucible, hibachi}, FCCraftingManagerCrucibleStoked.getInstance());
 		new AnvilRecipes();
 		new HopperFilterRecipes();
 		new KilnRecipes();

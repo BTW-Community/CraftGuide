@@ -3,11 +3,8 @@ package uristqwerty.CraftGuide.recipes;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import net.minecraft.src.FCBetterThanWolves;
 import net.minecraft.src.FCCraftingManagerBulk;
 import net.minecraft.src.FCCraftingManagerBulkRecipe;
-import net.minecraft.src.FCCraftingManagerCauldronStoked;
-import net.minecraft.src.FCCraftingManagerMillStone;
 import net.minecraft.src.ItemStack;
 import uristqwerty.CraftGuide.api.CraftGuideAPIObject;
 import uristqwerty.CraftGuide.api.ItemSlot;
@@ -18,69 +15,77 @@ import uristqwerty.CraftGuide.api.Slot;
 import uristqwerty.CraftGuide.api.SlotType;
 
 public class BulkRecipes extends CraftGuideAPIObject implements RecipeProvider {
-
-	private int inputWidth = 2;
-	private final int inputHeight = 3;
-		
-	private int outputWidth = 1;
-	private final int outputHeight = 3;
-	
 	private ItemStack[] machines;
-	private Slot[] slots;
-	
 	private FCCraftingManagerBulk craftingManager;
 	
-	private int xOffset;
+	private int inputSize;
+	private int inputArea;
+	private int inputW;
+	private int inputH;
 	
-	public BulkRecipes(int inputWidth, int outputWidth, ItemStack[] machines, FCCraftingManagerBulk craftingManager, int xOffset) {
-		this.inputWidth = inputWidth;
-		this.outputWidth = outputWidth;
+	private int outputSize;
+	private int outputArea;
+	private int outputW;
+	private int outputH;
+	
+	public BulkRecipes(ItemStack[] machines, FCCraftingManagerBulk craftingManager) {
 		this.machines = machines;
 		this.craftingManager = craftingManager;
-		this.xOffset = xOffset;
 	}
 		
-	public BulkRecipes(int inputWidth, int outputWidth, ItemStack machine, FCCraftingManagerBulk craftingManager, int xOffset) {
-		this(inputWidth, outputWidth, new ItemStack[] {null, machine, null}, craftingManager, xOffset);
-	}
-	
-	public BulkRecipes(int inputWidth, int outputWidth, ItemStack[] machines, FCCraftingManagerBulk craftingManager) {
-		this(inputWidth, outputWidth, machines, craftingManager, 3);
-	}
-	
-	public BulkRecipes(int inputWidth, int outputWidth, ItemStack machine, FCCraftingManagerBulk craftingManager) {
-		this(inputWidth, outputWidth, new ItemStack[] {null, machine, null}, craftingManager);
+	public BulkRecipes(ItemStack machine, FCCraftingManagerBulk craftingManager) {
+		this(new ItemStack[] {null, machine, null}, craftingManager);
 	}
 
 	@Override
 	public void generateRecipes(RecipeGenerator generator) {
-		createSlots();
-		RecipeTemplate template = generator.createRecipeTemplate(slots, machines[1]);
-		
 		try {
 			Field recipesField = FCCraftingManagerBulk.class.getDeclaredField("m_recipes");
 			recipesField.setAccessible(true);
 			List<FCCraftingManagerBulkRecipe> recipes = (List<FCCraftingManagerBulkRecipe>) recipesField.get(craftingManager);
 			
+			// Determine the maximum input and output lengths of the recipes.
+			// Having different sizes looks jarring, especially when comparing
+			// recipes of the same machine, so we use the same size for all recipes.
 			for (FCCraftingManagerBulkRecipe recipe : recipes) {
+				List<ItemStack> inputs = recipe.getCraftingIngrediantList();
+				List<ItemStack> outputs = recipe.getCraftingOutputList();
+				// Condensing is required for the Companion Cube MillStone recipe,
+				// which outputs multiple single items of the same type for some reason.
+				BTWRecipes.condenseItemStackList(outputs);
+				
+				inputSize = Math.max(inputSize, inputs.size());
+				outputSize = Math.max(outputSize, outputs.size());
+			}
+			
+			inputW = (int) Math.ceil(inputSize / 3.0);
+			inputH = Math.min(inputSize, 3);
+			inputArea = inputW * inputH;
+			
+			outputW = (int) Math.ceil(outputSize / 3.0);
+			outputH = Math.min(outputSize, 3);
+			outputArea = outputW * outputH;
+			
+			System.out.println(String.format("\n(%d) %d * %d = %d, (%d) %d * %d = %d", inputSize, inputW, inputH, inputArea, outputSize, outputW, outputH, outputArea));
+			
+			Slot[] slots = createSlots();
+			RecipeTemplate template = generator.createRecipeTemplate(slots, machines[1]).setSize((inputW + 1 + outputH) * 18 + 6, 3 * 18 + 6);
+			
+			for (FCCraftingManagerBulkRecipe recipe : recipes) {
+				List<ItemStack> inputs = recipe.getCraftingIngrediantList();
+				List<ItemStack> outputs = recipe.getCraftingOutputList();
+				BTWRecipes.condenseItemStackList(outputs);
+				
 				ItemStack[] crafting = new ItemStack[slots.length];
 				
-				List<ItemStack> inputs = recipe.getCraftingIngrediantList();
-				int j = inputs.size() == 1 ? 1 : 0;
-				for (int i = 0; i < inputs.size() && i < inputWidth*inputHeight; i++) {
-					crafting[i + j] = inputs.get(i);
+				for (int i = 0; i < inputs.size(); i++) {
+					crafting[i] = inputs.get(i);
 				}
-
-				for (int i = 0; i < machines.length; i++) {
-					crafting[inputWidth*inputHeight + i] = machines[i];
+				for (int i = 0; i < 3; i++) {
+					crafting[inputArea + i] = machines[i];
 				}
-				
-				List<ItemStack> outputs = recipe.getCraftingOutputList();
-				// Condensing is required for the Companion Cube MillStone recipe
-				BTWRecipes.condenseItemStackList(outputs);
-				j = outputs.size() == 1 ? 1 : 0;
-				for (int row = 0; row < outputHeight && row < outputs.size(); row++) {
-					crafting[inputWidth*inputHeight + machines.length + row + j] = outputs.get(row);
+				for (int i = 0; i < outputs.size(); i++) {
+					crafting[inputArea + 3 + i] = outputs.get(i);
 				}
 				
 				generator.addRecipe(template, crafting);
@@ -96,19 +101,27 @@ public class BulkRecipes extends CraftGuideAPIObject implements RecipeProvider {
 		}
 	}
 	
-	private void createSlots() {
-		slots = new ItemSlot[inputWidth*inputHeight + machines.length + outputHeight];
+	private Slot[] createSlots() {
+		Slot[] slots = new ItemSlot[inputArea + 3 + outputArea];
 		
-		for (int row = 0; row < inputHeight; row++) {
-			for (int col = 0; col < inputWidth; col++) {
-				slots[row * inputWidth + col] = new ItemSlot(col * 18 + xOffset, row * 18 + 3, 16, 16, true);
+		int inputShift = (3 - inputH) * 9;
+		int outputShift = (3 - outputH) * 9;
+		
+		for (int col = 0; col < inputW; col++) {
+			for (int row = 0; row < inputH; row++) {
+				slots[inputH * col + row] = new ItemSlot(col * 18, row * 18 + inputShift, 16, 16, true);
 			}
 		}
-		for (int row = 0; row < machines.length; row++) {
-			slots[inputWidth*inputHeight + row] = new ItemSlot(inputWidth * 18 + xOffset, row * 18 + 3, 16, 16).setSlotType(SlotType.MACHINE_SLOT);
+		
+		for (int row = 0; row < 3; row++) {
+			slots[inputArea + row] = new ItemSlot(inputW * 18, row * 18, 16, 16).setSlotType(SlotType.MACHINE_SLOT);
 		}
-		for (int row = 0; row < outputHeight; row++) {
-			slots[inputWidth*inputHeight + machines.length + row] = new ItemSlot(inputWidth * 18 + xOffset + 18, row * 18 + 3, 16, 16, true).setSlotType(SlotType.OUTPUT_SLOT);
+		for (int col = 0; col < outputW; col++) {
+			for (int row = 0; row < outputH; row++) {
+				slots[inputArea + 3 + outputH * col + row] = new ItemSlot((inputW + 1 + col) * 18, row * 18 + outputShift, 16, 16, true).setSlotType(SlotType.OUTPUT_SLOT);
+			}
 		}
+		
+		return slots;
 	}
 }
