@@ -7,20 +7,15 @@ import java.util.List;
 
 import net.minecraft.src.Block;
 import net.minecraft.src.FCBetterThanWolves;
-import net.minecraft.src.FCBlockUnfiredPottery;
-import net.minecraft.src.FCCraftingManagerBulkRecipe;
 import net.minecraft.src.FCCraftingManagerKiln;
 import net.minecraft.src.FCCraftingManagerKilnRecipe;
-import net.minecraft.src.FCItemPlacesAsBlock;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import uristqwerty.CraftGuide.api.CraftGuideAPIObject;
-import uristqwerty.CraftGuide.api.ItemSlot;
 import uristqwerty.CraftGuide.api.RecipeGenerator;
 import uristqwerty.CraftGuide.api.RecipeProvider;
 import uristqwerty.CraftGuide.api.RecipeTemplate;
 import uristqwerty.CraftGuide.api.Slot;
-import uristqwerty.CraftGuide.api.SlotType;
 
 public class KilnRecipes extends CraftGuideAPIObject implements RecipeProvider {
 	private ItemStack bellows = new ItemStack(FCBetterThanWolves.fcBellows);

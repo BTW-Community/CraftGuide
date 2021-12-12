@@ -2,20 +2,16 @@ package uristqwerty.CraftGuide.recipes;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.List;
 
 import net.minecraft.src.FCBetterThanWolves;
-import net.minecraft.src.FCCraftingManagerBulkRecipe;
 import net.minecraft.src.FCCraftingManagerHopperFilter;
 import net.minecraft.src.FCCraftingManagerHopperFilterRecipe;
 import net.minecraft.src.ItemStack;
 import uristqwerty.CraftGuide.api.CraftGuideAPIObject;
-import uristqwerty.CraftGuide.api.ItemSlot;
 import uristqwerty.CraftGuide.api.RecipeGenerator;
 import uristqwerty.CraftGuide.api.RecipeProvider;
 import uristqwerty.CraftGuide.api.RecipeTemplate;
 import uristqwerty.CraftGuide.api.Slot;
-import uristqwerty.CraftGuide.api.SlotType;
 
 public class HopperFilterRecipes extends CraftGuideAPIObject implements RecipeProvider {
 	private ItemStack hopper = new ItemStack(FCBetterThanWolves.fcHopper);

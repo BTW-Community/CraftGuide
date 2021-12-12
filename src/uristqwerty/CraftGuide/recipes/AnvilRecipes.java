@@ -5,8 +5,6 @@ import java.util.List;
 
 import net.minecraft.src.FCBetterThanWolves;
 import net.minecraft.src.FCCraftingManagerAnvil;
-import net.minecraft.src.FCCraftingManagerBulk;
-import net.minecraft.src.FCCraftingManagerBulkRecipe;
 import net.minecraft.src.IRecipe;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ShapedRecipes;
