@@ -27,17 +27,17 @@ public class BTWRecipes {
 	ItemStack crucible = new ItemStack(FCBetterThanWolves.fcCrucible);
 	
 	public BTWRecipes() {
-//		new BulkRecipes(FCCraftingManagerMillStone.getInstance(), millStone);
-//		new BulkRecipes(FCCraftingManagerCauldron.getInstance(), cauldron);
-//		new BulkRecipes(FCCraftingManagerCauldronStoked.getInstance(), 1, bellows, cauldron, hibachi);
-//		new BulkRecipes(FCCraftingManagerCrucible.getInstance(), crucible);
-//		new BulkRecipes(FCCraftingManagerCrucibleStoked.getInstance(), 1, bellows, crucible, hibachi);
-//		new AnvilRecipes();
-//		new HopperFilterRecipes();
+		new BulkRecipes(FCCraftingManagerMillStone.getInstance(), millStone);
+		new BulkRecipes(FCCraftingManagerCauldron.getInstance(), cauldron);
+		new BulkRecipes(FCCraftingManagerCauldronStoked.getInstance(), 1, bellows, cauldron, hibachi);
+		new BulkRecipes(FCCraftingManagerCrucible.getInstance(), crucible);
+		new BulkRecipes(FCCraftingManagerCrucibleStoked.getInstance(), 1, bellows, crucible, hibachi);
+		new AnvilRecipes();
+		new HopperFilterRecipes();
 		new KilnRecipes();
-//		new PistonPackingRecipes();
-//		new SawRecipes();
-//		new TurntableRecipes();
+		new PistonPackingRecipes();
+		new SawRecipes();
+		new TurntableRecipes();
 	}
 	
 	public static Slot[] createSlots(int inputSize, int machineH, int outputSize) {
