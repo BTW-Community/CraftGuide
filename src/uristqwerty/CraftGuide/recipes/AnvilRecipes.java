@@ -29,8 +29,8 @@ public class AnvilRecipes extends CraftGuideAPIObject implements RecipeProvider 
 	public void generateRecipes(RecipeGenerator generator) {
 		slotsShaped = createSlots(true);
 		slotsShapeless = createSlots(false);
-		RecipeTemplate templateShaped = generator.createRecipeTemplate(slotsShaped, anvil).setSize(96, 76);
-		RecipeTemplate templateShapeless = generator.createRecipeTemplate(slotsShapeless, anvil).setSize(96, 76);
+		RecipeTemplate templateShaped = generator.createRecipeTemplate(slotsShaped, anvil).setSize(96, 78);
+		RecipeTemplate templateShapeless = generator.createRecipeTemplate(slotsShapeless, anvil).setSize(96, 78);
 		
 		List<IRecipe> recipes = FCCraftingManagerAnvil.getInstance().getRecipeList();
 		for (IRecipe recipe : recipes) {

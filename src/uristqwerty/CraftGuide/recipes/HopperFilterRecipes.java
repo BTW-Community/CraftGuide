@@ -2,8 +2,10 @@ package uristqwerty.CraftGuide.recipes;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.src.FCBetterThanWolves;
+import net.minecraft.src.FCCraftingManagerBulkRecipe;
 import net.minecraft.src.FCCraftingManagerHopperFilter;
 import net.minecraft.src.FCCraftingManagerHopperFilterRecipe;
 import net.minecraft.src.ItemStack;
@@ -16,15 +18,13 @@ import uristqwerty.CraftGuide.api.Slot;
 import uristqwerty.CraftGuide.api.SlotType;
 
 public class HopperFilterRecipes extends CraftGuideAPIObject implements RecipeProvider {
-	private Slot[] slots;
-	
 	private ItemStack hopper = new ItemStack(FCBetterThanWolves.fcHopper);
 	private ItemStack urn = new ItemStack(FCBetterThanWolves.fcItemUrn);
 	private ItemStack soulUrn = new ItemStack(FCBetterThanWolves.fcItemSoulUrn);
 
 	@Override
 	public void generateRecipes(RecipeGenerator generator) {
-		createSlots();
+		Slot[] slots = BTWRecipes.createSlots(2, 2, 2);
 		RecipeTemplate template = generator.createRecipeTemplate(slots, hopper);
 		
 		try {
@@ -57,21 +57,6 @@ public class HopperFilterRecipes extends CraftGuideAPIObject implements RecipePr
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
-		}
-	}
-	
-	private void createSlots() {
-		slots = new ItemSlot[6];
-		int xOffset = 14;
-		
-		for (int i = 0; i < 2; i++) {
-			slots[i] = new ItemSlot(xOffset, i * 18 + 3, 16, 16, true);
-		}
-		for (int i = 0; i < 2; i++) {
-			slots[2 + i] = new ItemSlot(18 + xOffset, i * 18 + 3, 16, 16).setSlotType(SlotType.MACHINE_SLOT);
-		}
-		for (int i = 0; i < 2; i++) {
-			slots[4 + i] = new ItemSlot(36 + xOffset, i * 18 + 3, 16, 16, true).setSlotType(SlotType.OUTPUT_SLOT);
 		}
 	}
 }
