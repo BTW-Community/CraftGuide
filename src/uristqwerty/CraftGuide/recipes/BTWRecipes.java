@@ -38,6 +38,7 @@ public class BTWRecipes {
 		new PistonPackingRecipes();
 		new SawRecipes();
 		new TurntableRecipes();
+		new LogChoppingRecipes();
 	}
 	
 	public static Slot[] createSlots(int inputSize, int machineH, int outputSize) {
