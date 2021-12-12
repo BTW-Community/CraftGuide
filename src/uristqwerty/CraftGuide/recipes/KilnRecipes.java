@@ -43,7 +43,7 @@ public class KilnRecipes extends CraftGuideAPIObject implements RecipeProvider {
 			Slot[] slots = BTWRecipes.createSlots(1, 3, outputSize);
 			RecipeTemplate template = generator.createRecipeTemplate(slots, brick);
 			
-			HashSet<Integer> completedInputs = new HashSet();
+			HashSet<List<Integer>> completedInputs = new HashSet();
 			for (FCCraftingManagerKilnRecipe recipe : recipes) {
 
 				Block inputBlock = recipe.getInputblock();
@@ -51,6 +51,7 @@ public class KilnRecipes extends CraftGuideAPIObject implements RecipeProvider {
 				// We get the item dropped, otherwise it'll give us the Block IDs of the
 				// actual blocks placed in the world, which aren't legitimately obtainable.
 				int inputID = inputBlock.idDropped(metadata, null, 1);
+				metadata = inputBlock.damageDropped(metadata);
 				
 				// The consequence of the above method is that wet brick and
 				// unfired Nether brick drop clay and Nether sludge respectively.
@@ -62,11 +63,14 @@ public class KilnRecipes extends CraftGuideAPIObject implements RecipeProvider {
 				}
 				
 				// Skip duplicate inputs.
-				if (!completedInputs.add(inputID)) {
+				ArrayList<Integer> inputCheck = new ArrayList();
+				inputCheck.add(inputID);
+				inputCheck.add(metadata);
+				if (!completedInputs.add(inputCheck)) {
 					continue;
 				}
 				
-				ItemStack input = new ItemStack(inputID, 1, 0);
+				ItemStack input = new ItemStack(inputID, 1, metadata);
 				ItemStack[] crafting = new ItemStack[slots.length];
 				
 				crafting[0] = input;
