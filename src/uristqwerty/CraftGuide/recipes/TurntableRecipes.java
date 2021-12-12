@@ -26,7 +26,7 @@ public class TurntableRecipes extends CraftGuideAPIObject implements RecipeProvi
 	@Override
 	public void generateRecipes(RecipeGenerator generator) {
 		Slot[] slots = BTWRecipes.createSlots(1, 1, 2);
-		RecipeTemplate template = generator.createRecipeTemplate(slots, turntable);
+		RecipeTemplate template = generator.createRecipeTemplate(slots, turntable).setSize(3 * 18 + 6, 2 * 18 + 6);
 		
 		generator.addRecipe(template, new ItemStack[] {
 			new ItemStack(FCBetterThanWolves.fcBlockUnfiredClay),
