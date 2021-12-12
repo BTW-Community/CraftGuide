@@ -1,12 +1,7 @@
 package uristqwerty.CraftGuide.recipes;
 
-import java.util.List;
-
 import net.minecraft.src.Block;
-import net.minecraft.src.CraftingManager;
 import net.minecraft.src.FCBetterThanWolves;
-import net.minecraft.src.FCRecipesLogChopping;
-import net.minecraft.src.IRecipe;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import uristqwerty.CraftGuide.api.CraftGuideAPIObject;
