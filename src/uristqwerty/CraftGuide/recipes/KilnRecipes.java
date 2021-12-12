@@ -24,9 +24,9 @@ import uristqwerty.CraftGuide.api.SlotType;
 
 public class KilnRecipes extends CraftGuideAPIObject implements RecipeProvider {
 	private ItemStack bellows = new ItemStack(FCBetterThanWolves.fcBellows);
-	private ItemStack brick = new ItemStack(Block.brick);
+	private ItemStack kiln = new ItemStack(FCBetterThanWolves.fcKiln);
 	private ItemStack hibachi = new ItemStack(FCBetterThanWolves.fcBBQ);
-	private ItemStack[] machines = new ItemStack[] {bellows, brick, hibachi};
+	private ItemStack[] machines = new ItemStack[] {bellows, kiln, hibachi};
 
 	@Override
 	public void generateRecipes(RecipeGenerator generator) {
@@ -41,7 +41,7 @@ public class KilnRecipes extends CraftGuideAPIObject implements RecipeProvider {
 				outputSize = Math.max(outputSize, outputs.length);
 			}
 			Slot[] slots = BTWRecipes.createSlots(1, 3, outputSize);
-			RecipeTemplate template = generator.createRecipeTemplate(slots, brick);
+			RecipeTemplate template = generator.createRecipeTemplate(slots, kiln);
 			
 			HashSet<List<Integer>> completedInputs = new HashSet();
 			for (FCCraftingManagerKilnRecipe recipe : recipes) {
