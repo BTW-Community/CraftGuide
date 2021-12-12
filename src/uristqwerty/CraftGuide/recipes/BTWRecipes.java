@@ -42,6 +42,7 @@ public class BTWRecipes {
 		
 		new LogChoppingRecipes();
 		new FishingRodBaitingRecipes();
+		new KnittingRecipes();
 	}
 	
 	public static Slot[] createSlots(int inputSize, int machineH, int outputSize) {
