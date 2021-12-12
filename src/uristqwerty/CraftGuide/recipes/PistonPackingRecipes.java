@@ -3,9 +3,11 @@ package uristqwerty.CraftGuide.recipes;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import net.minecraft.src.Block;
 import net.minecraft.src.FCBetterThanWolves;
+import net.minecraft.src.FCCraftingManagerBulkRecipe;
 import net.minecraft.src.FCCraftingManagerKiln;
 import net.minecraft.src.FCCraftingManagerKilnRecipe;
 import net.minecraft.src.FCCraftingManagerPistonPacking;
@@ -20,28 +22,40 @@ import uristqwerty.CraftGuide.api.Slot;
 import uristqwerty.CraftGuide.api.SlotType;
 
 public class PistonPackingRecipes extends CraftGuideAPIObject implements RecipeProvider {
-	private Slot[] slots;
 	private ItemStack piston = new ItemStack(Block.pistonBase);
 
 	@Override
 	public void generateRecipes(RecipeGenerator generator) {
-		createSlots();
-		RecipeTemplate template = generator.createRecipeTemplate(slots, piston);
 		
 		try {
 			Field recipesField = FCCraftingManagerPistonPacking.class.getDeclaredField("recipes");
 			recipesField.setAccessible(true);
 			ArrayList<FCCraftingManagerPistonPackingRecipe> recipes = (ArrayList<FCCraftingManagerPistonPackingRecipe>) recipesField.get(FCCraftingManagerPistonPacking.instance);
 			
+			int inputSize = 0;
+			for (FCCraftingManagerPistonPackingRecipe recipe : recipes) {
+				ItemStack[] inputs = recipe.getInput();
+				inputSize = Math.max(inputSize, inputs.length);
+			}
+			Slot[] slots = BTWRecipes.createSlots(inputSize, 1, 1);
+			
+			int inputW = (int) Math.ceil(inputSize / 3.0);
+			int inputH = Math.min(inputSize, 3);
+			int maxHeight = Math.max(inputH, 1);
+			
+			RecipeTemplate template = generator.createRecipeTemplate(slots, piston).setSize((inputW + 2) * 18 + 6, maxHeight * 18 + 6);
+			
 			for (FCCraftingManagerPistonPackingRecipe recipe : recipes) {
 				ItemStack[] crafting = new ItemStack[slots.length];
+				
 				ItemStack[] inputs = recipe.getInput();
-				int j = inputs.length == 1 ? 1 : 0;
-				for (int i = 0; i < 3 && i < inputs.length; i++) {
-					crafting[i + j] = inputs[i];
+				
+				for (int i = 0; i < inputs.length; i++) {
+					crafting[i] = inputs[i];
 				}
-				crafting[3] = piston;
-				crafting[4] = new ItemStack(recipe.getOutput(), 1, recipe.getOutputMetadata());
+				crafting[inputSize] = piston;
+				crafting[inputSize + 1] = new ItemStack(recipe.getOutput(), 1, recipe.getOutputMetadata());
+				
 				generator.addRecipe(template, crafting);
 			}
 		} catch (NoSuchFieldException e) {
@@ -53,16 +67,5 @@ public class PistonPackingRecipes extends CraftGuideAPIObject implements RecipeP
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	private void createSlots() {
-		slots = new ItemSlot[5];
-		int xOffset = 14;
-		
-		for (int i = 0; i < 3; i++) {
-			slots[i] = new ItemSlot(xOffset, i * 18 + 3, 16, 16, true);
-		}
-		slots[3] = new ItemSlot(18 + xOffset, 21, 16, 16).setSlotType(SlotType.MACHINE_SLOT);
-		slots[4] = new ItemSlot(36 + xOffset, 21, 16, 16).setSlotType(SlotType.OUTPUT_SLOT);
 	}
 }
