@@ -36,7 +36,8 @@ public class KilnRecipes extends CraftGuideAPIObject implements RecipeProvider {
 				outputSize = Math.max(outputSize, outputs.length);
 			}
 			Slot[] slots = BTWRecipes.createSlots(1, 3, outputSize);
-			RecipeTemplate template = generator.createRecipeTemplate(slots, kiln);
+			int outputW = (int) Math.ceil(outputSize / 3.0);
+			RecipeTemplate template = generator.createRecipeTemplate(slots, kiln).setSize((2 + outputW) * 18 + 6, 3 * 18 + 4);
 			
 			HashSet<List<Integer>> completedInputs = new HashSet();
 			for (FCCraftingManagerKilnRecipe recipe : recipes) {

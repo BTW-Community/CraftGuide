@@ -24,7 +24,7 @@ public class LogChoppingRecipes extends CraftGuideAPIObject implements RecipePro
 	@Override
 	public void generateRecipes(RecipeGenerator generator) {
 		Slot[] slots = createSlots();
-		RecipeTemplate template = generator.createRecipeTemplate(slots, null).setSize(5 * 18 + 6, 3 * 18 + 6);
+		RecipeTemplate template = generator.createRecipeTemplate(slots, null).setSize(5 * 18 + 7, 3 * 18 + 4);
 		
 		// Low quality axe.
 		for (ItemStack axe : new ItemStack[] {axeStone, axeGold}) {
@@ -86,14 +86,16 @@ public class LogChoppingRecipes extends CraftGuideAPIObject implements RecipePro
 	// Taken from DefaultRecipeProvider and modified.
 	private Slot[] createSlots() {
 		return new ItemSlot[]{
-			new ItemSlot(12, 12, 16, 16),
-			new ItemSlot(30, 12, 16, 16),
-			new ItemSlot(12, 30, 16, 16),
-			new ItemSlot(30, 30, 16, 16),
-			new ItemSlot(59, 3, 16, 16, true).setSlotType(SlotType.OUTPUT_SLOT),
-			new ItemSlot(59, 21, 16, 16, true).setSlotType(SlotType.OUTPUT_SLOT),
-			new ItemSlot(59, 39, 16, 16, true).setSlotType(SlotType.OUTPUT_SLOT),
-			new ItemSlot(77, 3, 16, 16, true).setSlotType(SlotType.OUTPUT_SLOT),
+			new ItemSlot(12, 12, 16, 16).drawOwnBackground(),
+			new ItemSlot(30, 12, 16, 16).drawOwnBackground(),
+			new ItemSlot(12, 30, 16, 16).drawOwnBackground(),
+			new ItemSlot(30, 30, 16, 16).drawOwnBackground(),
+			new ItemSlot(59, 3, 16, 16, true).drawOwnBackground().setSlotType(SlotType.OUTPUT_SLOT),
+			new ItemSlot(59, 21, 16, 16, true).drawOwnBackground().setSlotType(SlotType.OUTPUT_SLOT),
+			new ItemSlot(59, 39, 16, 16, true).drawOwnBackground().setSlotType(SlotType.OUTPUT_SLOT),
+			new ItemSlot(77, 3, 16, 16, true).drawOwnBackground().setSlotType(SlotType.OUTPUT_SLOT),
+			new ItemSlot(77, 21, 16, 16, true).drawOwnBackground().setSlotType(SlotType.OUTPUT_SLOT),
+			new ItemSlot(77, 39, 16, 16, true).drawOwnBackground().setSlotType(SlotType.OUTPUT_SLOT),
 		};
 	}
 }

@@ -64,7 +64,7 @@ public class BTWRecipes {
 		
 		for (int col = 0; col < inputW; col++) {
 			for (int row = 0; row < inputH; row++) {
-				slots[inputH * col + row] = new ItemSlot(col * 18 + 3, row * 18 + 3 + inputShift, 16, 16, true);
+				slots[inputH * col + row] = new ItemSlot(col * 18 + 3, row * 18 + 3 + inputShift, 16, 16, true).drawOwnBackground();
 			}
 		}
 		for (int row = 0; row < machineH; row++) {
@@ -72,7 +72,7 @@ public class BTWRecipes {
 		}
 		for (int col = 0; col < outputW; col++) {
 			for (int row = 0; row < outputH; row++) {
-				slots[inputArea + machineH + outputH * col + row] = new ItemSlot((inputW + 1 + col) * 18 + 3, row * 18 + 3 + outputShift, 16, 16, true).setSlotType(SlotType.OUTPUT_SLOT);
+				slots[inputArea + machineH + outputH * col + row] = new ItemSlot((inputW + 1 + col) * 18 + 3, row * 18 + 3 + outputShift, 16, 16, true).drawOwnBackground().setSlotType(SlotType.OUTPUT_SLOT);
 			}
 		}
 		

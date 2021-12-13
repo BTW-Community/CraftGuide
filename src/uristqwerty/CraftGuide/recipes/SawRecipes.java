@@ -37,7 +37,7 @@ public class SawRecipes extends CraftGuideAPIObject implements RecipeProvider {
 			int outputH = Math.min(outputSize, 3);
 			int maxHeight = Math.max(outputH, 1);
 			
-			RecipeTemplate template = generator.createRecipeTemplate(slots, saw).setSize((2 + outputW) * 18 + 6, maxHeight * 18 + 6);
+			RecipeTemplate template = generator.createRecipeTemplate(slots, saw).setSize((2 + outputW) * 18 + 6, maxHeight * 18 + 4);
 			
 			HashSet<List<Integer>> completedInputs = new HashSet();
 			for (FCCraftingManagerSawRecipe recipe : recipes) {

@@ -21,7 +21,7 @@ public class FishingRodBaitingRecipes extends CraftGuideAPIObject implements Rec
 	@Override
 	public void generateRecipes(RecipeGenerator generator) {
 		Slot[] slots = createSlots();
-		RecipeTemplate template = generator.createRecipeTemplate(slots, null).setSize(4 * 18 + 6, 2 * 18 + 6);
+		RecipeTemplate template = generator.createRecipeTemplate(slots, null).setSize(4 * 18 + 8, 3 * 18 + 4);
 		
 		for (ItemStack bait : new ItemStack[] {oyster, wing, wart, eye, flesh}) {
 			ItemStack[] crafting = new ItemStack[slots.length];
@@ -37,11 +37,11 @@ public class FishingRodBaitingRecipes extends CraftGuideAPIObject implements Rec
 	// Taken from DefaultRecipeProvider and modified.
 	private Slot[] createSlots() {
 		return new ItemSlot[]{
-			new ItemSlot(12, 12, 16, 16),
-			new ItemSlot(30, 12, 16, 16),
-			new ItemSlot(12, 30, 16, 16),
-			new ItemSlot(30, 30, 16, 16),
-			new ItemSlot(59, 21, 16, 16, true).setSlotType(SlotType.OUTPUT_SLOT),
+			new ItemSlot(12, 12, 16, 16).drawOwnBackground(),
+			new ItemSlot(30, 12, 16, 16).drawOwnBackground(),
+			new ItemSlot(12, 30, 16, 16).drawOwnBackground(),
+			new ItemSlot(30, 30, 16, 16).drawOwnBackground(),
+			new ItemSlot(59, 21, 16, 16, true).drawOwnBackground().setSlotType(SlotType.OUTPUT_SLOT),
 		};
 	}
 }

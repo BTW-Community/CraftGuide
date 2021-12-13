@@ -21,7 +21,7 @@ public class HopperFilterRecipes extends CraftGuideAPIObject implements RecipePr
 	@Override
 	public void generateRecipes(RecipeGenerator generator) {
 		Slot[] slots = BTWRecipes.createSlots(2, 2, 2);
-		RecipeTemplate template = generator.createRecipeTemplate(slots, hopper);
+		RecipeTemplate template = generator.createRecipeTemplate(slots, hopper).setSize(3 * 18 + 6, 2 * 18 + 4);
 		
 		try {
 			Field recipesField = FCCraftingManagerHopperFilter.class.getDeclaredField("recipes");

@@ -35,7 +35,7 @@ public class PistonPackingRecipes extends CraftGuideAPIObject implements RecipeP
 			int inputH = Math.min(inputSize, 3);
 			int maxHeight = Math.max(inputH, 1);
 			
-			RecipeTemplate template = generator.createRecipeTemplate(slots, piston).setSize((inputW + 2) * 18 + 6, maxHeight * 18 + 6);
+			RecipeTemplate template = generator.createRecipeTemplate(slots, piston).setSize((inputW + 2) * 18 + 6, maxHeight * 18 + 4);
 			
 			for (FCCraftingManagerPistonPackingRecipe recipe : recipes) {
 				ItemStack[] crafting = new ItemStack[slots.length];

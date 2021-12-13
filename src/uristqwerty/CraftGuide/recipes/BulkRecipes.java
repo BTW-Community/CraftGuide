@@ -60,7 +60,7 @@ public class BulkRecipes extends CraftGuideAPIObject implements RecipeProvider {
 			int maxHeight = Math.max(Math.max(inputH, outputH), machines.length);
 			
 			Slot[] slots = BTWRecipes.createSlots(inputSize, machines.length, outputSize);
-			RecipeTemplate template = generator.createRecipeTemplate(slots, machines[index]).setSize((inputW + 1 + outputW) * 18 + 6, maxHeight * 18 + 6);
+			RecipeTemplate template = generator.createRecipeTemplate(slots, machines[index]).setSize((inputW + 1 + outputW) * 18 + 6, maxHeight * 18 + 4);
 			
 			for (FCCraftingManagerBulkRecipe recipe : recipes) {
 				List<ItemStack> inputs = recipe.getCraftingIngrediantList();

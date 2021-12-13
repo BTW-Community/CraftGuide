@@ -18,31 +18,26 @@ import uristqwerty.CraftGuide.api.Slot;
 import uristqwerty.CraftGuide.api.SlotType;
 
 public class AnvilRecipes extends CraftGuideAPIObject implements RecipeProvider {
-	
-	private Slot[] slotsShaped;
-	private Slot[] slotsShapeless;
 	private ItemStack anvil = new ItemStack(FCBetterThanWolves.fcAnvil);
 
 	@Override
 	public void generateRecipes(RecipeGenerator generator) {
-		slotsShaped = createSlots(true);
-		slotsShapeless = createSlots(false);
-		RecipeTemplate templateShaped = generator.createRecipeTemplate(slotsShaped, anvil).setSize(96, 78);
-		RecipeTemplate templateShapeless = generator.createRecipeTemplate(slotsShapeless, anvil).setSize(96, 78);
+		Slot[] slots = createSlots();
+		RecipeTemplate template = generator.createRecipeTemplate(slots, anvil).setSize(96, 76);
 		
 		List<IRecipe> recipes = FCCraftingManagerAnvil.getInstance().getRecipeList();
 		for (IRecipe recipe : recipes) {
 			try {
 				Field recipeField;
 				if (recipe instanceof ShapelessRecipes) {
-					recipeField = ShapelessRecipes.class.getDeclaredField("recipeItems");
+					recipeField = getPrivateField(ShapelessRecipes.class, "recipeItems", "b");
 				} else {
-					recipeField = ShapedRecipes.class.getDeclaredField("recipeItems");
+					recipeField = getPrivateField(ShapedRecipes.class, "recipeItems", "d");
 				}
 				recipeField.setAccessible(true);
 				ItemStack[] inputs = (ItemStack[]) recipeField.get(recipe);
 				
-				ItemStack[] crafting = new ItemStack[slotsShaped.length];
+				ItemStack[] crafting = new ItemStack[slots.length];
 				for (int i = 0; i < inputs.length; i++) {
 					crafting[i] = inputs[i];
 				}
@@ -50,13 +45,8 @@ public class AnvilRecipes extends CraftGuideAPIObject implements RecipeProvider 
 				crafting[16] = anvil;
 				crafting[17] = recipe.getRecipeOutput();
 				
-				if (recipe instanceof ShapelessRecipes) {
-					generator.addRecipe(templateShapeless, crafting);
-				} else {
-					generator.addRecipe(templateShaped, crafting);
-				}
-			} catch (NoSuchFieldException e) {
-				e.printStackTrace();
+				generator.addRecipe(template, crafting);
+				
 			} catch (SecurityException e) {
 				e.printStackTrace();
 			} catch (IllegalArgumentException e) {
@@ -67,16 +57,33 @@ public class AnvilRecipes extends CraftGuideAPIObject implements RecipeProvider 
 		}
 	}
 	
-	private Slot[] createSlots(boolean drawOwnBackground) {
+	private Slot[] createSlots() {
 		Slot[] slots = new ItemSlot[18];
 		
 		for (int row = 0; row < 4; row++) {
 			for (int col = 0; col < 4; col++) {
-				slots[row * 4 + col] = new ItemSlot(col * 18 + 3, row * 18 + 3, 16, 16, true).drawOwnBackground(drawOwnBackground);
+				slots[row * 4 + col] = new ItemSlot(col * 18 + 3, row * 18 + 3, 16, 16, true).drawOwnBackground();
 			}
 		}
 		slots[16] = new ItemSlot(75, 39, 16, 16).setSlotType(SlotType.MACHINE_SLOT);
-		slots[17] = new ItemSlot(75, 21, 16, 16, true).setSlotType(SlotType.OUTPUT_SLOT).drawOwnBackground();
+		slots[17] = new ItemSlot(75, 21, 16, 16, true).drawOwnBackground().setSlotType(SlotType.OUTPUT_SLOT);
 		return slots;
+	}
+	
+	private <T> Field getPrivateField(Class<? extends T> recipeClass, String name, String obfName) {
+		Field field = null;
+		try {
+			field = recipeClass.getDeclaredField(name);
+		} catch (NoSuchFieldException e) {
+			try {
+				field = recipeClass.getDeclaredField(obfName);
+			} catch (NoSuchFieldException e1) {
+				e1.printStackTrace();
+			} catch (SecurityException e1) {
+				e1.printStackTrace();
+			}
+		}
+		field.setAccessible(true);
+		return field;
 	}
 }
