@@ -43,9 +43,11 @@ public class BTWRecipes {
 		new LogChoppingRecipes();
 		new FishingRodBaitingRecipes();
 		new KnittingRecipes();
+		
+		new MerchantRecipes();
 	}
 	
-	public static Slot[] createSlots(int inputSize, int machineH, int outputSize) {
+	public static Slot[] createSlots(int inputSize, int machineH, int outputSize, boolean drawQuantity) {
 		int inputW = (int) Math.ceil(inputSize / 3.0);
 		int inputH = Math.min(inputSize, 3);
 		int inputArea = inputW * inputH;
@@ -64,7 +66,7 @@ public class BTWRecipes {
 		
 		for (int col = 0; col < inputW; col++) {
 			for (int row = 0; row < inputH; row++) {
-				slots[inputH * col + row] = new ItemSlot(col * 18 + 3, row * 18 + 3 + inputShift, 16, 16, true).drawOwnBackground();
+				slots[inputH * col + row] = new ItemSlot(col * 18 + 3, row * 18 + 3 + inputShift, 16, 16, drawQuantity).drawOwnBackground();
 			}
 		}
 		for (int row = 0; row < machineH; row++) {
@@ -72,11 +74,15 @@ public class BTWRecipes {
 		}
 		for (int col = 0; col < outputW; col++) {
 			for (int row = 0; row < outputH; row++) {
-				slots[inputArea + machineH + outputH * col + row] = new ItemSlot((inputW + 1 + col) * 18 + 3, row * 18 + 3 + outputShift, 16, 16, true).drawOwnBackground().setSlotType(SlotType.OUTPUT_SLOT);
+				slots[inputArea + machineH + outputH * col + row] = new ItemSlot((inputW + 1 + col) * 18 + 3, row * 18 + 3 + outputShift, 16, 16, drawQuantity).drawOwnBackground().setSlotType(SlotType.OUTPUT_SLOT);
 			}
 		}
 		
 		return slots;
+	}
+	
+	public static Slot[] createSlots(int inputSize, int machineH, int outputSize) {
+		return createSlots(inputSize, machineH, outputSize, true);
 	}
 	
 	/*
