@@ -1,8 +1,16 @@
 package uristqwerty.CraftGuide.recipes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.src.Block;
+import net.minecraft.src.CraftingManager;
 import net.minecraft.src.FCBetterThanWolves;
+import net.minecraft.src.FCCraftingRecipeLogChopping;
+import net.minecraft.src.FCItemAxe;
+import net.minecraft.src.IRecipe;
 import net.minecraft.src.Item;
+import net.minecraft.src.ItemAxe;
 import net.minecraft.src.ItemStack;
 import uristqwerty.CraftGuide.api.CraftGuideAPIObject;
 import uristqwerty.CraftGuide.api.ItemSlot;
@@ -13,89 +21,92 @@ import uristqwerty.CraftGuide.api.Slot;
 import uristqwerty.CraftGuide.api.SlotType;
 
 public class LogChoppingRecipes extends CraftGuideAPIObject implements RecipeProvider {
-	private ItemStack axeStone = new ItemStack(Item.axeStone);
-	private ItemStack axeGold = new ItemStack(Item.axeGold);
-	
-	private ItemStack axeIron = new ItemStack(Item.axeIron);
-	private ItemStack axeDiamond = new ItemStack(Item.axeDiamond);
-	private ItemStack axeRefined = new ItemStack(FCBetterThanWolves.fcItemRefinedAxe);
-	private ItemStack axeBattle = new ItemStack(FCBetterThanWolves.fcItemBattleAxe);
-
 	@Override
 	public void generateRecipes(RecipeGenerator generator) {
-		Slot[] slots = createSlots();
-		RecipeTemplate template = generator.createRecipeTemplate(slots, null).setSize(5 * 18 + 7, 3 * 18 + 4);
-		
-		// Low quality axe.
-		for (ItemStack axe : new ItemStack[] {axeStone, axeGold}) {
-			// Vanilla logs.
-			for (int i = 0; i < 4; i++) {
-				ItemStack[] crafting = new ItemStack[slots.length];
-				
-				crafting[0] = axe;
-				crafting[1] = new ItemStack(Block.wood, 1, i);
-				crafting[4] = new ItemStack(Item.stick, 2);
-				crafting[5] = new ItemStack(FCBetterThanWolves.fcItemSawDust, 4);
-				crafting[6] = new ItemStack(FCBetterThanWolves.fcItemBark, 1, i);
-				
-				generator.addRecipe(template, crafting);
+		List<ItemStack> axes = new ArrayList();
+		for (int id = 0; id < Item.itemsList.length; id++) {
+			Item item = Item.itemsList[id];
+			if (item instanceof FCItemAxe) {
+				axes.add(new ItemStack(item));
 			}
-			
-			// Blood wood log.
-			ItemStack[] crafting = new ItemStack[slots.length];
-			
-			crafting[0] = axe;
-			crafting[1] = new ItemStack(FCBetterThanWolves.fcBloodWood);
-			crafting[4] = new ItemStack(Item.stick, 2);
-			crafting[5] = new ItemStack(FCBetterThanWolves.fcItemSawDust, 3);
-			crafting[6] = new ItemStack(FCBetterThanWolves.fcItemSoulDust);
-			crafting[7] = new ItemStack(FCBetterThanWolves.fcItemBark, 1, 4);
-			
-			generator.addRecipe(template, crafting);
 		}
 		
-		// High quality axe.
-		for (ItemStack axe : new ItemStack[] {axeIron, axeDiamond, axeRefined, axeBattle}) {
-			// Vanilla logs
-			for (int i = 0; i < 4; i++) {
+		List<IRecipe> recipes = CraftingManager.getInstance().getRecipeList();
+		
+		int outputSize = 0;
+		for (IRecipe recipe : recipes) {
+			if (recipe instanceof FCCraftingRecipeLogChopping) {
+				FCCraftingRecipeLogChopping logRecipe = (FCCraftingRecipeLogChopping) recipe;
+				
+				int outputLen = logRecipe.getSecondaryOutput().length;
+				if (logRecipe.getHasLowQualityOutputs()) {
+					outputLen = Math.max(outputLen, logRecipe.getSecondaryOutputLowQuality().length);
+				}
+				
+				outputSize = Math.max(outputSize, outputLen + 1);
+			}
+		}
+		int outputW = (int) Math.ceil(outputSize / 3.0);
+		
+		Slot[] slots = createSlots(outputSize);
+		RecipeTemplate template = generator.createRecipeTemplate(slots, null).setSize((3 + outputW) * 18 + 6, 3 * 18 + 4);
+		
+		for (IRecipe recipe : recipes) {
+			if (recipe instanceof FCCraftingRecipeLogChopping) {
+				FCCraftingRecipeLogChopping logRecipe = (FCCraftingRecipeLogChopping) recipe;
 				ItemStack[] crafting = new ItemStack[slots.length];
 				
-				crafting[0] = axe;
-				crafting[1] = new ItemStack(Block.wood, 1, i);
-				crafting[4] = new ItemStack(Block.planks, 2, i);
-				crafting[5] = new ItemStack(FCBetterThanWolves.fcItemSawDust, 2);
-				crafting[6] = new ItemStack(FCBetterThanWolves.fcItemBark, 1, i);
-				
-				generator.addRecipe(template, crafting);
+				for (ItemStack axe : axes) {
+					crafting[0] = axe;
+					crafting[1] = logRecipe.getInput();
+					
+					ItemStack[] secondaryOutputs;
+					if (isLowQualityAxe(axe) && logRecipe.getHasLowQualityOutputs()) {
+						crafting[4] = logRecipe.getRecipeOutputLowQuality();
+						secondaryOutputs = logRecipe.getSecondaryOutputLowQuality();
+					} else {
+						crafting[4] = logRecipe.getRecipeOutput();
+						secondaryOutputs = logRecipe.getSecondaryOutput();
+					}
+					
+					if (logRecipe.HasSecondaryOutput()) {
+						for (int i = 0; i < secondaryOutputs.length; i++) {
+							crafting[5 + i] = secondaryOutputs[i];
+						}
+					}
+					
+					generator.addRecipe(template, crafting);
+				}
 			}
-			
-			// Blood wood log.
-			ItemStack[] crafting = new ItemStack[slots.length];
-			
-			crafting[0] = axe;
-			crafting[1] = new ItemStack(FCBetterThanWolves.fcBloodWood);
-			crafting[4] = new ItemStack(Block.planks, 2, 4);
-			crafting[5] = new ItemStack(FCBetterThanWolves.fcItemSawDust);
-			crafting[6] = new ItemStack(FCBetterThanWolves.fcItemSoulDust);
-			crafting[7] = new ItemStack(FCBetterThanWolves.fcItemBark, 1, 4);
-			
-			generator.addRecipe(template, crafting);
 		}
 	}
 	
-	// Taken from DefaultRecipeProvider and modified.
-	private Slot[] createSlots() {
-		return new ItemSlot[]{
-			new ItemSlot(12, 12, 16, 16).drawOwnBackground(),
-			new ItemSlot(30, 12, 16, 16).drawOwnBackground(),
-			new ItemSlot(12, 30, 16, 16).drawOwnBackground(),
-			new ItemSlot(30, 30, 16, 16).drawOwnBackground(),
-			new ItemSlot(59, 3, 16, 16, true).drawOwnBackground().setSlotType(SlotType.OUTPUT_SLOT),
-			new ItemSlot(59, 21, 16, 16, true).drawOwnBackground().setSlotType(SlotType.OUTPUT_SLOT),
-			new ItemSlot(59, 39, 16, 16, true).drawOwnBackground().setSlotType(SlotType.OUTPUT_SLOT),
-			new ItemSlot(77, 3, 16, 16, true).drawOwnBackground().setSlotType(SlotType.OUTPUT_SLOT),
-			new ItemSlot(77, 21, 16, 16, true).drawOwnBackground().setSlotType(SlotType.OUTPUT_SLOT),
-			new ItemSlot(77, 39, 16, 16, true).drawOwnBackground().setSlotType(SlotType.OUTPUT_SLOT),
-		};
+	private Slot[] createSlots(int outputSize) {
+		int outputW = (int) Math.ceil(outputSize / 3.0);
+		int outputH = Math.min(outputSize, 3);
+		int outputArea = outputW * outputH;
+		
+		Slot[] slots = new ItemSlot[4 + outputArea];
+		
+		for (int col = 0; col < 2; col++) {
+			for (int row = 0; row < 2; row++) {
+				slots[2 * col + row] = new ItemSlot(col * 18 + 12, row * 18 + 12, 16, 16).drawOwnBackground();
+			}
+		}
+		for (int col = 0; col < outputW; col++) {
+			for (int row = 0; row < outputH; row++) {
+				slots[4 + outputH * col + row] = new ItemSlot((3 + col) * 18 + 3, row * 18 + 3, 16, 16, true).drawOwnBackground().setSlotType(SlotType.OUTPUT_SLOT);
+			}
+		}
+		
+		return slots;
+	}
+	
+	private boolean isAxe(ItemStack stack) {
+		return stack.getItem() instanceof FCItemAxe;
+	}
+	
+	private boolean isLowQualityAxe(ItemStack stack) {
+		return isAxe(stack) && ((FCItemAxe) stack.getItem()).GetConsumesHungerOnZeroHardnessVegetation();
 	}
 }
