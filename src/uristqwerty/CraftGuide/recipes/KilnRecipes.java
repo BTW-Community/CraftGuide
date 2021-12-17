@@ -9,6 +9,7 @@ import net.minecraft.src.Block;
 import net.minecraft.src.FCBetterThanWolves;
 import net.minecraft.src.FCCraftingManagerKiln;
 import net.minecraft.src.FCCraftingManagerKilnRecipe;
+import net.minecraft.src.FCItemPlacesAsBlock;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import uristqwerty.CraftGuide.api.CraftGuideAPIObject;
@@ -39,33 +40,24 @@ public class KilnRecipes extends CraftGuideAPIObject implements RecipeProvider {
 			int outputW = (int) Math.ceil(outputSize / 3.0);
 			RecipeTemplate template = generator.createRecipeTemplate(slots, kiln).setSize((2 + outputW) * 18 + 6, 3 * 18 + 4);
 			
-			HashSet<List<Integer>> completedInputs = new HashSet();
 			for (FCCraftingManagerKilnRecipe recipe : recipes) {
-
 				Block inputBlock = recipe.getInputblock();
-				int metadata = recipe.getInputMetadata();
-				// We get the item dropped, otherwise it'll give us the Block IDs of the
-				// actual blocks placed in the world, which aren't legitimately obtainable.
-				int inputID = inputBlock.idDropped(metadata, null, 1);
-				metadata = inputBlock.damageDropped(metadata);
-				
-				// The consequence of the above method is that wet brick and
-				// unfired Nether brick drop clay and Nether sludge respectively.
-				if (inputID == Item.clay.itemID) {
-					inputID = FCBetterThanWolves.fcItemBrickUnfired.itemID;
-				}
-				if (inputID == FCBetterThanWolves.fcItemNetherSludge.itemID) {
-					inputID = FCBetterThanWolves.fcItemNetherBrickUnfired.itemID;
+				int metadata = recipe.getInputMetadata()[0];
+
+				int inputID;
+				try {
+					inputID = inputBlock.idPicked(null, 0, 0, 0);
+				} catch (NullPointerException e) {
+					inputID = inputBlock.idDropped(metadata, null, 1);
 				}
 				
-				// Skip duplicate inputs.
-				ArrayList<Integer> inputCheck = new ArrayList();
-				inputCheck.add(inputID);
-				inputCheck.add(metadata);
-				if (!completedInputs.add(inputCheck)) {
+				// Ignore things that cannot be placed.
+				if (!(Item.itemsList[inputID] instanceof FCItemPlacesAsBlock || Block.blocksList[inputID] instanceof Block)) {
 					continue;
 				}
 				
+				metadata = inputBlock.damageDropped(metadata);
+								
 				ItemStack input = new ItemStack(inputID, 1, metadata);
 				ItemStack[] crafting = new ItemStack[slots.length];
 				

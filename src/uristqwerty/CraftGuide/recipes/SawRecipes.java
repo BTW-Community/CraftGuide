@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import net.minecraft.src.Block;
+import net.minecraft.src.BlockHalfSlab;
 import net.minecraft.src.FCBetterThanWolves;
 import net.minecraft.src.FCCraftingManagerSaw;
 import net.minecraft.src.FCCraftingManagerSawRecipe;
@@ -39,32 +40,27 @@ public class SawRecipes extends CraftGuideAPIObject implements RecipeProvider {
 			
 			RecipeTemplate template = generator.createRecipeTemplate(slots, saw).setSize((2 + outputW) * 18 + 6, maxHeight * 18 + 4);
 			
-			HashSet<List<Integer>> completedInputs = new HashSet();
 			for (FCCraftingManagerSawRecipe recipe : recipes) {
 				Block inputBlock = recipe.getInputblock();
-				int metadata = recipe.getInputMetadata();
-				// We get the item dropped, otherwise it'll give us the Block IDs of the
-				// actual blocks placed in the world, which aren't legitimately obtainable.
-				// (i.e. various orientations of the "same" block).
-				int inputID = inputBlock.idDropped(metadata, null, 1);
-				metadata = inputBlock.damageDropped(metadata);
+				int metadata = recipe.getInputMetadata()[0];
 				
-				// For some reason idDropped for vines is 0.
-				if (inputID == 0) {
-					inputID = Block.vine.blockID;
+				int inputID;
+				try {
+					inputID = inputBlock.idPicked(null, 0, 0, 0);
+				} catch (NullPointerException e) {
+					inputID = inputBlock.idDropped(metadata, null, 1);
 				}
 				
-				// Skip duplicate inputs.
-				ArrayList<Integer> inputCheck = new ArrayList();
-				inputCheck.add(inputID);
-				inputCheck.add(metadata);
-				if (!completedInputs.add(inputCheck)) {
-					continue;
+				metadata = inputBlock.damageDropped(metadata);
+				
+				int quantity = 1;
+				if (inputBlock instanceof BlockHalfSlab) {
+					quantity = inputBlock.renderAsNormalBlock() ? 2 : 1;
 				}
 				
 				ItemStack[] crafting = new ItemStack[slots.length];
 				
-				crafting[0] = new ItemStack(inputID, 1, metadata);
+				crafting[0] = new ItemStack(inputID, quantity, metadata);
 				crafting[1] = saw;
 				ItemStack[] outputs = recipe.getOutput();
 				for (int i = 0; i < outputs.length; i++) {
