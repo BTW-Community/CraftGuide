@@ -28,18 +28,25 @@ public class AnvilRecipes extends CraftGuideAPIObject implements RecipeProvider 
 		List<IRecipe> recipes = FCCraftingManagerAnvil.getInstance().getRecipeList();
 		for (IRecipe recipe : recipes) {
 			try {
-				Field recipeField;
-				if (recipe instanceof ShapelessRecipes) {
-					recipeField = getPrivateField(ShapelessRecipes.class, "recipeItems", "b");
-				} else {
-					recipeField = getPrivateField(ShapedRecipes.class, "recipeItems", "d");
-				}
-				recipeField.setAccessible(true);
-				ItemStack[] inputs = (ItemStack[]) recipeField.get(recipe);
-				
 				ItemStack[] crafting = new ItemStack[slots.length];
-				for (int i = 0; i < inputs.length; i++) {
-					crafting[i] = inputs[i];
+				
+				if (recipe instanceof ShapelessRecipes) {
+					ItemStack[] inputs = (ItemStack[]) getPrivateField(ShapelessRecipes.class, recipe, "recipeItems", "b");
+					
+					for (int i = 0; i < inputs.length; i++) {
+						crafting[i] = inputs[i];
+					}
+				} else {
+					ItemStack[] inputs = (ItemStack[]) getPrivateField(ShapedRecipes.class, recipe, "recipeItems", "d");
+					
+					int width = (Integer) getPrivateField(ShapedRecipes.class, recipe, "recipeWidth", "b");
+					int height = (Integer) getPrivateField(ShapedRecipes.class, recipe, "recipeHeight", "c");
+					
+					for (int row = 0; row < height; row++) {
+						for (int col = 0; col < width; col++) {
+							crafting[row * 4 + col] = inputs[row * width + col];
+						}
+					}
 				}
 				
 				crafting[16] = anvil;
@@ -70,7 +77,7 @@ public class AnvilRecipes extends CraftGuideAPIObject implements RecipeProvider 
 		return slots;
 	}
 	
-	private <T> Field getPrivateField(Class<? extends T> recipeClass, String name, String obfName) {
+	private <T> Object getPrivateField(Class<? extends T> recipeClass, T object, String name, String obfName) throws IllegalArgumentException, IllegalAccessException {
 		Field field = null;
 		try {
 			field = recipeClass.getDeclaredField(name);
@@ -84,6 +91,6 @@ public class AnvilRecipes extends CraftGuideAPIObject implements RecipeProvider 
 			}
 		}
 		field.setAccessible(true);
-		return field;
+		return field.get(object);
 	}
 }
