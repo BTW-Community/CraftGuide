@@ -1,790 +1,118 @@
 package uristqwerty.CraftGuide.recipes;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
-import net.minecraft.src.Block;
-import net.minecraft.src.FCAddOnHandler;
-import net.minecraft.src.Item;
+import net.minecraft.src.FCBetterThanWolves;
+import net.minecraft.src.FCCraftingManagerCauldron;
+import net.minecraft.src.FCCraftingManagerCauldronStoked;
+import net.minecraft.src.FCCraftingManagerCrucible;
+import net.minecraft.src.FCCraftingManagerCrucibleStoked;
+import net.minecraft.src.FCCraftingManagerMillStone;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.ShapedRecipes;
-import net.minecraft.src.ShapelessRecipes;
-import uristqwerty.CraftGuide.CraftGuide;
-import uristqwerty.CraftGuide.api.CraftGuideAPIObject;
-import uristqwerty.CraftGuide.api.ExtraSlot;
 import uristqwerty.CraftGuide.api.ItemSlot;
-import uristqwerty.CraftGuide.api.RecipeGenerator;
-import uristqwerty.CraftGuide.api.RecipeProvider;
-import uristqwerty.CraftGuide.api.RecipeTemplate;
 import uristqwerty.CraftGuide.api.Slot;
 import uristqwerty.CraftGuide.api.SlotType;
-import uristqwerty.CraftGuide.client.BWRData;
 
-public class BTWRecipes extends CraftGuideAPIObject implements RecipeProvider
-{
-	private ItemStack crucible;
-	private ItemStack hibachi;
-	private ItemStack bellows;
-	private ItemStack soulUrn;
-	private ItemStack urn;
-	private Class unfiredPotteryClass;
-	private Class endStoneClass;
-	private Class unfiredBrickClass;
-	private Class chunkOreIronClass;
-	private Class chunkOreGoldClass;
-	private Block aestheticOpaque;
-	private Item soap;
-	private Item potash;
-	private Item sawDust;
-	private Item soulDust;
-	private Item hellfireDust;
-	private Item groundNetherrack;
-	private Item concentratedHellfire;
-
-	private Object[][][] extraMillstoneRecipes;
-	private Object[][][] extraCauldronRecipes;
-	private Object[][][] extraStokedCauldronRecipes;
-	private Object[][][] extraCrucibleRecipes;
-	private Object[][][] extraStokedCrucibleRecipes;
+public class BTWRecipes {
+	// Used for stoked fire recipes
+	ItemStack bellows = new ItemStack(FCBetterThanWolves.fcBellows);
+	ItemStack hibachi = new ItemStack(FCBetterThanWolves.fcBBQ);
 	
-	private String classPackagePrefix = "";
-
+	ItemStack millStone = new ItemStack(FCBetterThanWolves.fcMillStone);
+	ItemStack cauldron = new ItemStack(FCBetterThanWolves.fcCauldron);
+	ItemStack crucible = new ItemStack(FCBetterThanWolves.fcCrucible);
+	
 	public BTWRecipes() {
-		classPackagePrefix = getclassPackagePrefix();
+		new BulkRecipes(FCCraftingManagerMillStone.getInstance(), millStone);
+		new BulkRecipes(FCCraftingManagerCauldron.getInstance(), cauldron);
+		new BulkRecipes(FCCraftingManagerCauldronStoked.getInstance(), 1, bellows, cauldron, hibachi);
+		new BulkRecipes(FCCraftingManagerCrucible.getInstance(), crucible);
+		new BulkRecipes(FCCraftingManagerCrucibleStoked.getInstance(), 1, bellows, crucible, hibachi);
+		
+		new AnvilRecipes();
+		new HopperFilterRecipes();
+		new KilnRecipes();
+		new PistonPackingRecipes();
+		new SawRecipes();
+		new TurntableRecipes();
+		
+		new LogChoppingRecipes();
+		new FishingRodBaitingRecipes();
+		new KnittingRecipes();
+		
+		new MerchantRecipes();
 	}
 	
-	@Override
-	public void generateRecipes(RecipeGenerator generator)
-	{
-		try
-		{
-			Class btw = Class.forName(classPackagePrefix+"FCBetterThanWolves");
-			aestheticOpaque = (Block)btw.getField("fcAestheticOpaque").get(null);
-			crucible = new ItemStack((Block)btw.getField("fcCrucible").get(null));
-			bellows = new ItemStack((Block)btw.getField("fcBellows").get(null));
-			hibachi = new ItemStack((Block)btw.getField("fcBBQ").get(null));
-			soulUrn = new ItemStack((Item)btw.getField("fcItemSoulUrn").get(null));
-			urn = new ItemStack((Item)btw.getField("fcItemUrn").get(null));
-			unfiredPotteryClass = Class.forName(classPackagePrefix+"FCBlockUnfiredPottery");
-			endStoneClass = Class.forName(classPackagePrefix+"FCBlockEndStone");
-			unfiredBrickClass = Class.forName(classPackagePrefix+"FCBlockUnfiredBrick");
-			chunkOreIronClass = Class.forName(classPackagePrefix+"FCBlockChunkOreIron");
-			chunkOreGoldClass = Class.forName(classPackagePrefix+"FCBlockChunkOreGold");
-
-			soap = (Item)btw.getField("fcItemSoap").get(null);
-			potash = (Item)btw.getField("fcItemPotash").get(null);
-			sawDust = (Item)btw.getField("fcItemSawDust").get(null);
-			soulDust = (Item)btw.getField("fcItemSoulDust").get(null);
-			hellfireDust = (Item)btw.getField("fcItemHellfireDust").get(null);
-			groundNetherrack = (Item)btw.getField("fcItemGroundNetherrack").get(null);
-			concentratedHellfire = (Item)btw.getField("fcItemConcentratedHellfire").get(null);
-
-			/* Setting these to null isn't really needed here, but it means that no
-			 *  extra work is necessary in the future if/when the config settings can
-			 *  be changed in-game. Would also work if BWR is automatically detected
-			 *  on server join, so that if you switch between BWR and non-BWR servers
-			 *  the recipe list can automatically change to be correct for whichever
-			 *  you are currently in. */
-			extraMillstoneRecipes = null;
-			extraCauldronRecipes = null;
-			extraStokedCauldronRecipes = null;
-			extraCrucibleRecipes = null;
-			extraStokedCrucibleRecipes = null;
-
-			if(CraftGuide.insertBetterWithRenewablesRecipes || CraftGuide.betterWithRenewablesDetected)
-			{
-				if(BWRData.hasRecipes())
-				{
-					extraMillstoneRecipes = BWRData.getMillstoneRecipes();
-					extraCauldronRecipes = BWRData.getCauldronRecipes();
-					extraStokedCauldronRecipes = BWRData.getStokedCauldronRecipes();
-					extraCrucibleRecipes = BWRData.getCrucibleRecipes();
-					extraStokedCrucibleRecipes = BWRData.getStokedCrucibleRecipes();
-				}
-				else
-				{
-					addBWRExtraRecipes(btw);
-				}
-			}
-
-			Object millstoneRecipes = Class.forName(classPackagePrefix+"FCCraftingManagerMillStone").getMethod("getInstance").invoke(null);
-			ItemStack millstone = new ItemStack((Block)btw.getField("fcMillStone").get(null));
-			addBulkRecipes(generator, millstoneRecipes, millstone, false, extraMillstoneRecipes);
-
-			Object cauldronRecipes = Class.forName(classPackagePrefix+"FCCraftingManagerCauldron").getMethod("getInstance").invoke(null);
-			ItemStack cauldron = new ItemStack((Block)btw.getField("fcCauldron").get(null));
-			addBulkRecipes(generator, cauldronRecipes, cauldron, false, extraCauldronRecipes);
-
-			Object cauldronStokedRecipes = Class.forName(classPackagePrefix+"FCCraftingManagerCauldronStoked").getMethod("getInstance").invoke(null);
-			addBulkRecipes(generator, cauldronStokedRecipes, cauldron, true, extraStokedCauldronRecipes);
-
-			Object crucibleRecipes = Class.forName(classPackagePrefix+"FCCraftingManagerCrucible").getMethod("getInstance").invoke(null);
-			addBulkRecipes(generator, crucibleRecipes, crucible, false, extraCrucibleRecipes);
-
-			Object crucibleStokedRecipes = Class.forName(classPackagePrefix+"FCCraftingManagerCrucibleStoked").getMethod("getInstance").invoke(null);
-			addBulkRecipes(generator, crucibleStokedRecipes, crucible, true, extraStokedCrucibleRecipes);
-
-			Object anvilRecipes = Class.forName(classPackagePrefix+"FCCraftingManagerAnvil").getMethod("getInstance").invoke(null);
-			ItemStack anvil = new ItemStack((Block)btw.getField("fcAnvil").get(null));
-			addAnvilRecipes(generator, anvilRecipes, anvil);
-
-			ItemStack turntable = new ItemStack((Block)btw.getField("fcTurntable").get(null));
-			addTurntableRecipes(generator, turntable);
-
-			ItemStack kiln = new ItemStack((Block)btw.getField("fcKiln").get(null));
-			addKilnRecipes(generator, kiln);
-
-			ItemStack hopper = new ItemStack((Block)btw.getField("fcHopper").get(null));
-			addHopperRecipes(generator, hopper);
-
-			ItemStack saw = new ItemStack((Block)btw.getField("fcSaw").get(null));
-			addSawRecipes(generator, saw);
-		}
-		catch(IllegalArgumentException e)
-		{
-			e.printStackTrace();
-		}
-		catch(SecurityException e)
-		{
-			e.printStackTrace();
-		}
-		catch(IllegalAccessException e)
-		{
-			e.printStackTrace();
-		}
-		catch(InvocationTargetException e)
-		{
-			e.printStackTrace();
-		}
-		catch(NoSuchMethodException e)
-		{
-			e.printStackTrace();
-		}
-		catch(ClassNotFoundException e)
-		{
-			e.printStackTrace();
-		}
-		catch(NoSuchFieldException e)
-		{
-			e.printStackTrace();
-		}
-	}
-
-	private void addBulkRecipes(RecipeGenerator generator, Object manager, ItemStack block, boolean stoked, Object[][][] extraRecipes) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ClassNotFoundException
-	{
-		Field recipes = Class.forName(classPackagePrefix+"FCCraftingManagerBulk").getDeclaredField("m_recipes");
-		recipes.setAccessible(true);
-		List recipeList = (List)recipes.get(manager);
-
-		int inSize = 0, outSize = 0;
-
-		for(Object recipe: recipeList)
-		{
-			List input = (List)Class.forName(classPackagePrefix+"FCCraftingManagerBulkRecipe").getMethod("getCraftingIngrediantList").invoke(recipe);
-			List output = (List)Class.forName(classPackagePrefix+"FCCraftingManagerBulkRecipe").getMethod("getCraftingOutputList").invoke(recipe);
-
-			inSize = Math.max(inSize, input.size());
-			outSize = Math.max(outSize, output.size());
-		}
-
-		if(extraRecipes != null)
-		{
-			for(Object[][] recipe: extraRecipes)
-			{
-				if(recipe != null)
-				{
-					inSize = Math.max(inSize, recipe[0].length);
-					outSize = Math.max(outSize, recipe[1].length);
-				}
+	public static Slot[] createSlots(int inputSize, int machineH, int outputSize, boolean drawQuantity) {
+		int inputW = (int) Math.ceil(inputSize / 3.0);
+		int inputH = Math.min(inputSize, 3);
+		int inputArea = inputW * inputH;
+		
+		int outputW = (int) Math.ceil(outputSize / 3.0);
+		int outputH = Math.min(outputSize, 3);
+		int outputArea = outputW * outputH;
+		
+		Slot[] slots = new ItemSlot[inputArea + machineH + outputArea];
+		
+		int maxHeight = Math.max(Math.max(inputH, outputH), machineH);
+		
+		int inputShift = (maxHeight - inputH) * 9;
+		int outputShift = (maxHeight - outputH) * 9;
+		int machineShift = (maxHeight - machineH) * 9;
+		
+		for (int col = 0; col < inputW; col++) {
+			for (int row = 0; row < inputH; row++) {
+				slots[inputH * col + row] = new ItemSlot(col * 18 + 3, row * 18 + 3 + inputShift, 16, 16, drawQuantity).drawOwnBackground();
 			}
 		}
-
-		int inColumns = (inSize + 2) / 3;
-		int outColumns = (inSize + 2) / 3;
-
-		Slot[] recipeSlots = new Slot[inColumns * 3 + outColumns * 3 + (stoked? 3 : 1)];
-
-		for(int i = 0; i < inColumns; i++)
-		{
-			recipeSlots[i * 3 + 0] = new ItemSlot(i * 18 + 3,  3, 16, 16, true).drawOwnBackground();
-			recipeSlots[i * 3 + 1] = new ItemSlot(i * 18 + 3, 21, 16, 16, true).drawOwnBackground();
-			recipeSlots[i * 3 + 2] = new ItemSlot(i * 18 + 3, 39, 16, 16, true).drawOwnBackground();
+		for (int row = 0; row < machineH; row++) {
+			slots[inputArea + row] = new ItemSlot(inputW * 18 + 3, row * 18 + 3 + machineShift, 16, 16).setSlotType(SlotType.MACHINE_SLOT);
 		}
-
-		for(int i = 0; i < outColumns; i++)
-		{
-			recipeSlots[inColumns * 3 + i * 3 + 0] = new ItemSlot(inColumns * 18 + i * 18 + 21,  3, 16, 16, true).setSlotType(SlotType.OUTPUT_SLOT).drawOwnBackground();
-			recipeSlots[inColumns * 3 + i * 3 + 1] = new ItemSlot(inColumns * 18 + i * 18 + 21, 21, 16, 16, true).setSlotType(SlotType.OUTPUT_SLOT).drawOwnBackground();
-			recipeSlots[inColumns * 3 + i * 3 + 2] = new ItemSlot(inColumns * 18 + i * 18 + 21, 39, 16, 16, true).setSlotType(SlotType.OUTPUT_SLOT).drawOwnBackground();
-		}
-
-		recipeSlots[inColumns * 3 + outColumns * 3] = new ExtraSlot(inColumns * 18 + 3, 21, 16, 16, block).clickable().showName().setSlotType(SlotType.MACHINE_SLOT);
-
-		if(stoked)
-		{
-			recipeSlots[inColumns * 3 + outColumns * 3 + 1] = new ExtraSlot(inColumns * 18 + 3, 39, 16, 16, hibachi).clickable().showName().setSlotType(SlotType.MACHINE_SLOT);
-			recipeSlots[inColumns * 3 + outColumns * 3 + 2] = new ExtraSlot(inColumns * 18 + 3,  3, 16, 16, bellows).clickable().showName().setSlotType(SlotType.MACHINE_SLOT);
-		}
-
-		RecipeTemplate template = generator.createRecipeTemplate(recipeSlots, block);
-		template.setSize(inColumns * 18 + outColumns * 18 + 22, 58);
-
-		for(Object recipe: recipeList)
-		{
-			List input = (List)Class.forName(classPackagePrefix+"FCCraftingManagerBulkRecipe").getMethod("getCraftingIngrediantList").invoke(recipe);
-			List output = (List)Class.forName(classPackagePrefix+"FCCraftingManagerBulkRecipe").getMethod("getCraftingOutputList").invoke(recipe);
-
-			Object[] recipeContents = new Object[inColumns * 3 + outColumns * 3 + (stoked? 3 : 1)];
-
-			for(int i = 0; i < Math.min(inColumns * 3, input.size()); i++)
-			{
-				recipeContents[i] = input.get(i);
-			}
-
-			for(int i = 0; i < Math.min(outColumns * 3, output.size()); i++)
-			{
-				recipeContents[inColumns * 3 + i] = output.get(i);
-			}
-
-			recipeContents[inColumns * 3 + outColumns * 3] = block;
-
-			if(stoked)
-			{
-				recipeContents[inColumns * 3 + outColumns * 3 + 1] = hibachi;
-				recipeContents[inColumns * 3 + outColumns * 3 + 2] = bellows;
-			}
-
-			generator.addRecipe(template, recipeContents);
-		}
-
-		if(extraRecipes != null)
-		{
-			for(Object[][] recipe: extraRecipes)
-			{
-				if(recipe != null)
-				{
-					Object[] recipeContents = new Object[inColumns * 3 + outColumns * 3 + (stoked? 3 : 1)];
-
-					for(int i = 0; i < Math.min(inColumns * 3, recipe[0].length); i++)
-					{
-						recipeContents[i] = recipe[0][i];
-					}
-
-					for(int i = 0; i < Math.min(outColumns * 3, recipe[1].length); i++)
-					{
-						recipeContents[inColumns * 3 + i] = recipe[1][i];
-					}
-
-					recipeContents[inColumns * 3 + outColumns * 3] = block;
-
-					if(stoked)
-					{
-						recipeContents[inColumns * 3 + outColumns * 3 + 1] = hibachi;
-						recipeContents[inColumns * 3 + outColumns * 3 + 2] = bellows;
-					}
-
-					generator.addRecipe(template, recipeContents);
-				}
+		for (int col = 0; col < outputW; col++) {
+			for (int row = 0; row < outputH; row++) {
+				slots[inputArea + machineH + outputH * col + row] = new ItemSlot((inputW + 1 + col) * 18 + 3, row * 18 + 3 + outputShift, 16, 16, drawQuantity).drawOwnBackground().setSlotType(SlotType.OUTPUT_SLOT);
 			}
 		}
-	}
-
-	private void addAnvilRecipes(RecipeGenerator generator, Object manager, ItemStack anvil) throws SecurityException, NoSuchFieldException, ClassNotFoundException, IllegalArgumentException, IllegalAccessException
-	{
-		Field recipes = Class.forName(classPackagePrefix+"FCCraftingManagerAnvil").getDeclaredField("recipes");
-		recipes.setAccessible(true);
-		List recipeList = (List)recipes.get(manager);
-
-		Slot[] recipeSlots = new Slot[16 + 2];
-
-		for(int y = 0; y < 4; y++)
-		{
-			for(int x = 0; x < 4; x++)
-			{
-				recipeSlots[y * 4 + x] = new ItemSlot(x * 18 + 3, y * 18 + 3, 16, 16, true).drawOwnBackground();
-			}
-		}
-
-		recipeSlots[16] = new ItemSlot(75, 21, 16, 16, true).drawOwnBackground().setSlotType(SlotType.OUTPUT_SLOT);
-		recipeSlots[17] = new ExtraSlot(75, 39, 16, 16, anvil).clickable().showName().setSlotType(SlotType.OUTPUT_SLOT);
-		RecipeTemplate template = generator.createRecipeTemplate(recipeSlots, anvil);
-		template.setSize(96, 76);
-
-		for(Object recipe: recipeList)
-		{
-			if(recipe instanceof ShapelessRecipes)
-			{
-				addShapelessAnvilRecipe(generator, template, (ShapelessRecipes)recipe, anvil);
-			}
-			else if(recipe instanceof ShapedRecipes)
-			{
-				addShapedAnvilRecipe(generator, template, (ShapedRecipes)recipe, anvil);
-			}
-		}
-	}
-
-	private void addShapelessAnvilRecipe(RecipeGenerator generator, RecipeTemplate template, ShapelessRecipes recipe, ItemStack anvil) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException
-	{
-		List inputItems = (List)getPrivateValue(ShapelessRecipes.class, recipe, "b", "recipeItems");
-		Object[] recipeContents = new Object[18];
-
-		for(int i = 0; i < Math.min(inputItems.size(), 16); i++)
-		{
-			recipeContents[i] = inputItems.get(i);
-		}
-
-		recipeContents[16] = recipe.getRecipeOutput();
-		recipeContents[17] = anvil;
-
-		generator.addRecipe(template, recipeContents);
-	}
-
-	private void addShapedAnvilRecipe(RecipeGenerator generator, RecipeTemplate template, ShapedRecipes recipe, ItemStack anvil) throws SecurityException, IllegalArgumentException, NoSuchFieldException, IllegalAccessException
-	{
-		int width = (Integer)getPrivateValue(ShapedRecipes.class, recipe, "b", "recipeWidth");
-		int height = (Integer)getPrivateValue(ShapedRecipes.class, recipe, "c", "recipeHeight");
-		Object[] items = (Object[])getPrivateValue(ShapedRecipes.class, recipe, "d", "recipeItems");
-		Object[] recipeContents = new Object[18];
-
-		for(int y = 0; y < height; y++)
-		{
-			for(int x = 0; x < width; x++)
-			{
-				recipeContents[y * 4 + x] = items[y * width + x];
-			}
-		}
-
-		recipeContents[16] = recipe.getRecipeOutput();
-		recipeContents[17] = anvil;
-
-		generator.addRecipe(template, recipeContents);
-	}
-
-	private void addTurntableRecipes(RecipeGenerator generator, ItemStack turntable) throws ClassNotFoundException, IllegalArgumentException, SecurityException, IllegalAccessException, NoSuchFieldException
-	{
-		Slot[] recipeSlots = new Slot[] {
-			new ItemSlot(12, 21, 16, 16).drawOwnBackground(),
-			new ItemSlot(50, 12, 16, 16, true).setSlotType(SlotType.OUTPUT_SLOT).drawOwnBackground(),
-			new ItemSlot(50, 30, 16, 16, true).setSlotType(SlotType.OUTPUT_SLOT).drawOwnBackground(),
-			new ExtraSlot(31, 21, 16, 16, turntable).clickable().showName().setSlotType(SlotType.MACHINE_SLOT),
-		};
-
-		RecipeTemplate template = generator.createRecipeTemplate(recipeSlots, turntable);
-		Block unfiredPottery = (Block)Class.forName(classPackagePrefix+"FCBetterThanWolves").getField("fcUnfiredPottery").get(null);
-		ItemStack clay = new ItemStack(Item.clay);
-
-		addTurntableRecipe(generator, template, turntable, new ItemStack(Block.blockClay), new ItemStack(unfiredPottery, 1, 0), clay);
-		addTurntableRecipe(generator, template, turntable, unfiredPottery, 0, 1, null);
-		addTurntableRecipe(generator, template, turntable, unfiredPottery, 1, 2, clay);
-		addTurntableRecipe(generator, template, turntable, unfiredPottery, 2, 3, clay);
-		addTurntableRecipe(generator, template, turntable, unfiredPottery, 3, 4, null);
-		addTurntableRecipe(generator, template, turntable, new ItemStack(unfiredPottery, 1, 4), null, clay);
-	}
-
-	private void addTurntableRecipe(RecipeGenerator generator, RecipeTemplate template, ItemStack turntable, Block block, int dataIn, int dataOut, ItemStack drop)
-	{
-		addTurntableRecipe(generator, template, turntable, new ItemStack(block, 1, dataIn), new ItemStack(block, 1, dataOut), drop);
-	}
-
-	private void addTurntableRecipe(RecipeGenerator generator, RecipeTemplate template, ItemStack turntable, ItemStack input, ItemStack output, ItemStack drop)
-	{
-		Object[] recipe = new Object[4];
-
-		recipe[0] = input;
-		recipe[1] = output;
-		recipe[2] = drop;
-		recipe[3] = turntable;
-
-		generator.addRecipe(template, recipe);
-	}
-
-	private void addKilnRecipes(RecipeGenerator generator, ItemStack kiln) throws ClassNotFoundException, IllegalArgumentException, SecurityException, IllegalAccessException, NoSuchFieldException
-	{
-		Slot[] recipeSlots = new Slot[] {
-			new ItemSlot(12, 21, 16, 16).drawOwnBackground(),
-			new ItemSlot(50, 12, 16, 16, true).setSlotType(SlotType.OUTPUT_SLOT).drawOwnBackground(),
-			new ItemSlot(50, 30, 16, 16, true).setSlotType(SlotType.OUTPUT_SLOT).drawOwnBackground(),
-			new ExtraSlot(31, 21, 16, 16, kiln).clickable().showName().setSlotType(SlotType.MACHINE_SLOT),
-			new ExtraSlot(31, 39, 16, 16, hibachi).clickable().showName().setSlotType(SlotType.MACHINE_SLOT),
-			new ExtraSlot(31,  3, 16, 16, bellows).clickable().showName().setSlotType(SlotType.MACHINE_SLOT),
-		};
-
-		RecipeTemplate template = generator.createRecipeTemplate(recipeSlots, kiln);
-
-		for(int i = 0; i < Block.blocksList.length; i++)
-		{
-			Block block = Block.blocksList[i];
-
-			if(block != null && (Boolean)getPrivateValue(Block.class, block, "m_bCanBeCookedByKiln"))
-			{
-				addKilnRecipe(generator, template, kiln, block);
-			}
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private void addKilnRecipe(RecipeGenerator generator, RecipeTemplate template, ItemStack kiln, Block block) throws IllegalArgumentException, SecurityException, IllegalAccessException, NoSuchFieldException, ClassNotFoundException
-	{
-		if(unfiredPotteryClass.isAssignableFrom(block.getClass()))
-		{
-			ItemStack planter = new ItemStack((Block)Class.forName(classPackagePrefix+"FCBetterThanWolves").getField("fcPlanter").get(null));
-			ItemStack vase = new ItemStack((Block)Class.forName(classPackagePrefix+"FCBetterThanWolves").getField("fcVase").get(null));
-			ItemStack mould = new ItemStack((Item)Class.forName(classPackagePrefix+"FCBetterThanWolves").getField("fcItemMould").get(null));
-			ItemStack netherBrick = new ItemStack((Item)Class.forName(classPackagePrefix+"FCBetterThanWolves").getField("fcItemNetherBrick").get(null));
-
-			
-			addKilnRecipe(generator, template, kiln, new ItemStack(block, 1, 0), crucible);
-			addKilnRecipe(generator, template, kiln, new ItemStack(block, 1, 1), planter);
-			addKilnRecipe(generator, template, kiln, new ItemStack(block, 1, 2), vase);
-			addKilnRecipe(generator, template, kiln, new ItemStack(block, 1, 3), urn);
-			addKilnRecipe(generator, template, kiln, new ItemStack(block, 1, 4), mould);
-			addKilnRecipe(generator, template, kiln, new ItemStack(block, 1, 5), new ItemStack(Item.brick));
-			addKilnRecipe(generator, template, kiln, new ItemStack(block, 1, 7), netherBrick);
-			addKilnRecipe(generator, template, kiln, new ItemStack(block, 1, 9), new ItemStack(Item.cake));
-			addKilnRecipe(generator, template, kiln, new ItemStack(block, 1, 12), new ItemStack(Item.pumpkinPie));
-			addKilnRecipe(generator, template, kiln, new ItemStack(block, 1, 13), new ItemStack(Item.bread));
-		}
-		else
-		{
-			ItemStack input = new ItemStack(block);
-
-			if(endStoneClass.isAssignableFrom(block.getClass()))
-			{
-				ItemStack output1 = new ItemStack((Item)Class.forName(classPackagePrefix+"FCBetterThanWolves").getField("fcItemEnderSlag").get(null));
-				ItemStack output2 = new ItemStack(aestheticOpaque, 1, 10);
-				addKilnRecipe(generator, template, kiln, input, output1, output2);
-			}
-			else if(unfiredBrickClass.isAssignableFrom(block.getClass()))
-			{
-				ItemStack output1 = new ItemStack(Item.brick);
-				ItemStack output2 = null;
-				addKilnRecipe(generator, template, kiln, input, output1, output2);
-			}
-			else if(chunkOreIronClass.isAssignableFrom(block.getClass()))
-			{
-				ItemStack output1 = new ItemStack((Item)Class.forName(classPackagePrefix+"FCBetterThanWolves").getField("fcItemNuggetIron").get(null));
-				ItemStack output2 = null;
-				addKilnRecipe(generator, template, kiln, input, output1, output2);
-			}
-			else if(chunkOreGoldClass.isAssignableFrom(block.getClass()))
-			{
-				ItemStack output1 = new ItemStack(Item.goldNugget);
-				ItemStack output2 = null;
-				addKilnRecipe(generator, template, kiln, input, output1, output2);
-			}
-			else
-			{
-				int item = (Integer)getPrivateValue(Block.class, block, "m_iItemIndexDroppedWhenCookedByKiln");
-				int damage = (Integer)getPrivateValue(Block.class, block, "m_iItemDamageDroppedWhenCookedByKiln");
-				
-				if (item != -1) {
-					addKilnRecipe(generator, template, kiln, input, new ItemStack(item, 1, damage));
-				}
-				else {
-					try {
-						item = block.GetItemIndexDroppedWhenCookedByKiln(null,0,0,0);
-						addKilnRecipe(generator, template, kiln, input, new ItemStack(item, 1, 0));
-					}
-					catch (Exception e) {
-            FCAddOnHandler.LogMessage("There is an error on a kiln recipe. Please leave a report about it on http://www.sargunster.com/btwforum/viewtopic.php?f=12&t=9452 so it can be fixed.");
-					}
-				}
-			}
-		}
-	}
-
-	private void addKilnRecipe(RecipeGenerator generator, RecipeTemplate template, ItemStack kiln, ItemStack input, ItemStack output)
-	{
-		addKilnRecipe(generator, template, kiln, input, output, null);
-	}
-
-	private void addKilnRecipe(RecipeGenerator generator, RecipeTemplate template, ItemStack kiln, ItemStack input, ItemStack output1, ItemStack output2)
-	{
-		Object[] recipeContents = new Object[] {
-				input, output1, output2,
-				kiln, hibachi, bellows,
-		};
-
-		generator.addRecipe(template, recipeContents);
-	}
-
-	private void addHopperRecipes(RecipeGenerator generator, ItemStack hopper) throws IllegalArgumentException, SecurityException, IllegalAccessException, NoSuchFieldException, ClassNotFoundException
-	{
-		Slot[] recipeSlots = new Slot[] {
-				new ItemSlot(12, 12, 16, 16, true).drawOwnBackground(),
-				new ItemSlot(12, 30, 16, 16, true).drawOwnBackground(),
-				new ItemSlot(50, 12, 16, 16, true).setSlotType(SlotType.OUTPUT_SLOT).drawOwnBackground(),
-				new ItemSlot(50, 30, 16, 16, true).setSlotType(SlotType.OUTPUT_SLOT).drawOwnBackground(),
-				new ItemSlot(31, 12, 16, 16, true).setSlotType(SlotType.MACHINE_SLOT),
-				new ExtraSlot(31, 30, 16, 16, hopper).clickable().showName().setSlotType(SlotType.MACHINE_SLOT),
-			};
-
-		RecipeTemplate template = generator.createRecipeTemplate(recipeSlots, hopper);
-		ItemStack groundNetherrackStack = new ItemStack(groundNetherrack, 8);
-		ItemStack hellfireDustStack = new ItemStack(hellfireDust, 8);
-		ItemStack wicker = new ItemStack((Block)Class.forName(classPackagePrefix+"FCBetterThanWolves").getField("fcBlockWickerPane").get(null));
-		ItemStack slowsand = new ItemStack(Block.slowSand);
-		ItemStack soulDustStack = new ItemStack(soulDust, 8);
-		ItemStack sawDustStack = new ItemStack(sawDust, 8);
-
-		addHopperRecipe(generator, template, hopper, wicker, new ItemStack(Block.gravel), null, new ItemStack(Block.sand), new ItemStack(Item.flint));
-		addHopperRecipe(generator, template, hopper, slowsand, groundNetherrackStack, urn, hellfireDustStack, soulUrn);
-		addHopperRecipe(generator, template, hopper, slowsand, soulDustStack, urn, sawDustStack, soulUrn);
-	}
-
-	private void addHopperRecipe(RecipeGenerator generator, RecipeTemplate template, ItemStack hopper, ItemStack filter, ItemStack input1, ItemStack input2, ItemStack output1, ItemStack output2)
-	{
-		Object[] recipeContents = new Object[] {
-				input1, input2, output1, output2,filter, hopper,
-		};
-
-		generator.addRecipe(template, recipeContents);
-	}
-
-	private void addSawRecipes(RecipeGenerator generator, ItemStack saw) throws IllegalArgumentException, SecurityException, IllegalAccessException, NoSuchFieldException, ClassNotFoundException
-	{
-		Slot[] recipeSlots = new Slot[] {
-				new ItemSlot(12, 21, 16, 16, true).drawOwnBackground(),
-				new ItemSlot(50, 12, 16, 16, true).setSlotType(SlotType.OUTPUT_SLOT).drawOwnBackground(),
-				new ItemSlot(50, 30, 16, 16, true).setSlotType(SlotType.OUTPUT_SLOT).drawOwnBackground(),
-				new ExtraSlot(31, 21, 16, 16, saw).clickable().showName().setSlotType(SlotType.MACHINE_SLOT),
-			};
-
-		RecipeTemplate template = generator.createRecipeTemplate(recipeSlots, saw);
-
-		ItemStack bloodWood = new ItemStack((Block)Class.forName(classPackagePrefix+"FCBetterThanWolves").getField("fcBloodWood").get(null));
-		ItemStack gears = new ItemStack((Item)Class.forName(classPackagePrefix+"FCBetterThanWolves").getField("fcItemGear").get(null));
-		ItemStack soulDustStack = new ItemStack(soulDust, 2);
-		ItemStack sawDustStack = new ItemStack(sawDust, 2);
-		gears.stackSize = 2;
-
-		Block aestheticNonOpaque = (Block)Class.forName(classPackagePrefix+"FCBetterThanWolves").getField("fcAestheticNonOpaque").get(null);
-		Block companionCube = (Block)Class.forName(classPackagePrefix+"FCBetterThanWolves").getField("fcCompanionCube").get(null);
-
-		int mouldingID = (Integer)Class.forName(classPackagePrefix+"FCBetterThanWolves").getField("fcBlockWoodMouldingItemStubID").get(null);
-		int sidingID = (Integer)Class.forName(classPackagePrefix+"FCBetterThanWolves").getField("fcBlockWoodSidingItemStubID").get(null);
-		int cornerID = (Integer)Class.forName(classPackagePrefix+"FCBetterThanWolves").getField("fcBlockWoodCornerItemStubID").get(null);
-
-		addSawRecipe(generator, template, saw, bloodWood, new ItemStack(Block.planks, 4, 3), soulDustStack);
-
-		for(int i = 0; i < 4; i++)
-		{
-			addSawRecipe(generator, template, saw, Block.wood, Block.planks.blockID, i, 4, sawDustStack);
-			addSawRecipe(generator, template, saw, Block.planks, sidingID, i, 2, null);
-			addSawRecipe(generator, template, saw, sidingID, mouldingID, i, 2, null);
-			addSawRecipe(generator, template, saw, mouldingID, cornerID, i, 2, null);
-			addSawRecipe(generator, template, saw, new ItemStack(cornerID, 1, i), gears, null);
-			addSawRecipe(generator, template, saw, Block.woodDoubleSlab, Block.woodSingleSlab.blockID, i, 2, null);
-			addSawRecipe(generator, template, saw, Block.woodSingleSlab, mouldingID, i, 2, null);
-		}
-
-		addSawRecipe(generator, template, saw, Block.stairsWoodOak, sidingID, mouldingID, 0);
-		addSawRecipe(generator, template, saw, Block.stairsWoodSpruce, sidingID, mouldingID, 1);
-		addSawRecipe(generator, template, saw, Block.stairsWoodBirch, sidingID, mouldingID, 2);
-		addSawRecipe(generator, template, saw, Block.stairsWoodJungle, sidingID, mouldingID, 3);
-		addSawRecipe(generator, template, saw, Block.fence, cornerID, 0, 2, null);
-		addSawRecipe(generator, template, saw, new ItemStack(aestheticOpaque, 1, 0), new ItemStack(aestheticNonOpaque, 2, 5), null);
-		addSawRecipe(generator, template, saw, new ItemStack(companionCube, 1, 0), new ItemStack(companionCube, 2, 1), null);
-	}
-
-	private void addSawRecipe(RecipeGenerator generator, RecipeTemplate template, ItemStack saw, Block inputBlock, int outputID, int damage, int outputSize, ItemStack dust)
-	{
-		addSawRecipe(generator, template, saw,inputBlock.blockID, outputID, damage, outputSize, dust);
-	}
-
-	private void addSawRecipe(RecipeGenerator generator, RecipeTemplate template, ItemStack saw, int inputID, int outputID, int damage, int outputSize, ItemStack dust)
-	{
-		addSawRecipe(generator, template, saw, new ItemStack(inputID, 1, damage), new ItemStack(outputID, outputSize, damage), dust);
-	}
-
-	private void addSawRecipe(RecipeGenerator generator, RecipeTemplate template, ItemStack saw, Block inputBlock, int outputID1, int outputID2, int outputDamage)
-	{
-		addSawRecipe(generator, template, saw, new ItemStack(inputBlock.blockID, 1, 0), new ItemStack(outputID1, 1, outputDamage), new ItemStack(outputID2, 1, outputDamage));
-	}
-
-	private void addSawRecipe(RecipeGenerator generator, RecipeTemplate template, ItemStack saw, ItemStack input, ItemStack output1, ItemStack output2)
-	{
-		Object[] recipeContents = new Object[] {
-				input, output1, output2, saw,
-		};
-
-		generator.addRecipe(template, recipeContents);
-	}
-
-	private <T> Object getPrivateValue(Class<? extends T> objectClass, T object, String name) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException
-	{
-		return getPrivateValue(objectClass, object, name, name);
-	}
-
-	private <T> Object getPrivateValue(Class<? extends T> objectClass, T object, String obfuscatedName, String name) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException
-	{
-		Field field;
-		try
-		{
-			field = objectClass.getDeclaredField(obfuscatedName);
-		}
-		catch(NoSuchFieldException e)
-		{
-			field = objectClass.getDeclaredField(name);
-		}
-
-		field.setAccessible(true);
-		return field.get(object);
-	}
-
-	private void addBWRExtraRecipes(Class btw) throws IllegalArgumentException, SecurityException, IllegalAccessException, NoSuchFieldException
-	{
-		ItemStack dungBlock = new ItemStack(aestheticOpaque, 1, 1);
-		Item dung = (Item)btw.getField("fcDung").get(null);
-		Item scouredLeather = (Item)btw.getField("fcScouredLeather").get(null);
-		Item tannedLeather = (Item)btw.getField("fcTannedLeather").get(null);
-
-		extraMillstoneRecipes = new Object[][][]{
-				addGoldGrindingRecipe(Item.plateGold, 8),
-				addGoldGrindingRecipe(Item.legsGold, 7),
-				addGoldGrindingRecipe(Item.helmetGold, 5),
-				addGoldGrindingRecipe(Item.bootsGold, 4),
-				addGoldGrindingRecipe(Item.axeGold, 3),
-				addGoldGrindingRecipe(Item.pickaxeGold, 3),
-				addGoldGrindingRecipe(Item.swordGold, 2),
-				addGoldGrindingRecipe(Item.hoeGold, 2),
-				addGoldGrindingRecipe(Item.shovelGold, 1),
-
-				{{new ItemStack(concentratedHellfire, 9, CraftGuide.DAMAGE_WILDCARD), new ItemStack(Item.ingotGold, 3, CraftGuide.DAMAGE_WILDCARD)}, {new ItemStack(Item.redstone, 63)}},
-				{{new ItemStack(concentratedHellfire, 1, CraftGuide.DAMAGE_WILDCARD), new ItemStack(Item.goldNugget, 3, CraftGuide.DAMAGE_WILDCARD)}, {new ItemStack(Item.redstone, 7)}},
-				{{new ItemStack(groundNetherrack), new ItemStack(sawDust)}, {new ItemStack(hellfireDust), new ItemStack(soulDust)}},
-				{{new ItemStack(groundNetherrack)}, {new ItemStack(hellfireDust)}},
-		};
-
-		extraStokedCauldronRecipes = new Object[][][]{
-				addDiamondRecoveryRecipe(Item.plateDiamond, 8),
-				addDiamondRecoveryRecipe(Item.legsDiamond, 7),
-				addDiamondRecoveryRecipe(Item.helmetDiamond, 5),
-				addDiamondRecoveryRecipe(Item.bootsDiamond, 4),
-				addDiamondRecoveryRecipe(Item.axeDiamond, 3),
-				addDiamondRecoveryRecipe(Item.pickaxeDiamond, 3),
-				addDiamondRecoveryRecipe(Item.swordDiamond, 2),
-				addDiamondRecoveryRecipe(Item.hoeDiamond, 2),
-				addDiamondRecoveryRecipe(Item.shovelDiamond, 1),
-
-				addLapisRecoveryRecipeA(11, 0, 0, 1),
-				addLapisRecoveryRecipeB(11, 0, 0, 1),
-				addLapisRecoveryRecipeA(3, 0, 0, 2),
-				addLapisRecoveryRecipeB(3, 0, 0, 2),
-				addLapisRecoveryRecipeA(9, 13, 13, 2),
-				addLapisRecoveryRecipeB(9, 13, 13, 2),
-				addLapisRecoveryRecipeA(10, 14, 14, 2),
-				addLapisRecoveryRecipeB(10, 14, 14, 2),
-				addLapisRecoveryRecipeA(2, 6, 14, 4),
-				addLapisRecoveryRecipeB(2, 6, 14, 4),
-
-				{{new ItemStack(Block.sapling, 1, 0)}, {new ItemStack(Block.deadBush)}},
-		};
-
-		extraCauldronRecipes = new Object[][][]{
-				{{new ItemStack(Block.cobblestone), new ItemStack(Item.netherStalkSeeds), new ItemStack(soulDust)}, {new ItemStack(Block.netherrack), new ItemStack(sawDust)}},
-				{{new ItemStack(Block.cobblestone, 8), new ItemStack(Item.netherStalkSeeds, 8), soulUrn}, {new ItemStack(Block.netherrack, 8)}},
-				{{new ItemStack(dung, 9)}, {dungBlock}},
-				{{new ItemStack(scouredLeather, 1, CraftGuide.DAMAGE_WILDCARD), dungBlock}, {new ItemStack(tannedLeather, 1, 0), new ItemStack(dung, 8, 0)}},
-				{{new ItemStack(Item.silk, 3, CraftGuide.DAMAGE_WILDCARD), new ItemStack(Item.slimeBall, 1, CraftGuide.DAMAGE_WILDCARD)}, {new ItemStack(Block.web)}},
-		};
-	}
-
-	private Object[][] addGoldGrindingRecipe(Item item, int number)
-	{
-		return new Object[][]{{new ItemStack(item)}, {new ItemStack(Item.goldNugget, number * 3)}};
-	}
-
-	private Object[][] addDiamondRecoveryRecipe(Item item, int number)
-	{
-		return new Object[][]{
-			{new ItemStack(item), new ItemStack(potash, number * 8), new ItemStack(concentratedHellfire, number * 1)},
-			{new ItemStack(Item.diamond, number)}};
-	}
-
-	private Object[][] addLapisRecoveryRecipeA(int inColor, int outColor1, int outColor2, int quantity)
-	{
-		if(outColor1 == outColor2)
-		{
-			return new Object[][]{
-					{
-						new ItemStack(Block.cloth, quantity * 8, inColor),
-						new ItemStack(soap, quantity * 2, CraftGuide.DAMAGE_WILDCARD),
-						new ItemStack(Item.clay, 1, CraftGuide.DAMAGE_WILDCARD)
-					},
-					{
-						new ItemStack(Item.dyePowder, 1, 4),
-						new ItemStack(Block.cloth, quantity * 8, outColor1),
-					}
-			};
-		}
-		else
-		{
-			return new Object[][]{
-					{
-						new ItemStack(Block.cloth, quantity * 8, inColor),
-						new ItemStack(soap, quantity * 2, CraftGuide.DAMAGE_WILDCARD),
-						new ItemStack(Item.clay, 1, CraftGuide.DAMAGE_WILDCARD)
-					},
-					{
-						new ItemStack(Item.dyePowder, 1, 4),
-						new ItemStack(Block.cloth, quantity * 4, outColor1),
-						new ItemStack(Block.cloth, quantity * 4, outColor2),
-					}
-			};
-		}
-	}
-
-	private Object[][] addLapisRecoveryRecipeB(int inColor, int outColor1, int outColor2, int quantity)
-	{
-		if(outColor1 == outColor2)
-		{
-			return new Object[][]{
-					{
-						new ItemStack(Block.cloth, quantity * 8, inColor),
-						new ItemStack(soap, quantity * 2, CraftGuide.DAMAGE_WILDCARD),
-					},
-					{
-						new ItemStack(Block.cloth, quantity * 8, outColor1),
-					}
-			};
-		}
-		else
-		{
-			return new Object[][]{
-					{
-						new ItemStack(Block.cloth, quantity * 8, inColor),
-						new ItemStack(soap, quantity * 2, CraftGuide.DAMAGE_WILDCARD),
-					},
-					{
-						new ItemStack(Block.cloth, quantity * 4, outColor1),
-						new ItemStack(Block.cloth, quantity * 4, outColor2),
-					}
-			};
-		}
+		
+		return slots;
 	}
 	
-	private String getclassPackagePrefix() {
-		try {
-			if (Class.forName("FCBetterThanWolves") != null) {
-				System.out.println("Returning empty");
-				return "";
+	public static Slot[] createSlots(int inputSize, int machineH, int outputSize) {
+		return createSlots(inputSize, machineH, outputSize, true);
+	}
+	
+	/*
+	 * Groups together items of the same type and damage.
+	 */
+	public static void condenseItemStackList(List<ItemStack> list) {
+		if (list.size() <= 1) {
+			return;
+		}
+		
+		// Hash items without their stackSize, which we count separately and add as the value.
+		HashMap<List<Integer>, Integer> hash = new HashMap();
+		for (ItemStack itemStack : list) {
+			List<Integer> item = new ArrayList(2);
+			item.add(0, itemStack.itemID);
+			item.add(1, itemStack.getItemDamage());
+			int stackSize = itemStack.stackSize;
+			if (hash.containsKey(item)) {
+				stackSize += hash.get(item);
 			}
+			hash.put(item, stackSize);
 		}
-		catch(Throwable e) {
-			System.out.println(e);
+		list.clear();
+		
+		// Go through the hashed keys and create an ItemStack with the calculated stackSize.
+		Iterator<Entry<List<Integer>, Integer>> iterator = hash.entrySet().iterator();
+		while (iterator.hasNext()) {
+			Entry<List<Integer>, Integer> entry = iterator.next();
+			List<Integer> item = entry.getKey();
+			list.add(new ItemStack(item.get(0), entry.getValue(), item.get(1)));
 		}
-		try {
-			if (Class.forName("net.minecraft.src.FCBetterThanWolves") != null) {
-				System.out.println("Returning net.minecraft.src.");
-				return "net.minecraft.src.";
-			}
-		}
-		catch(Throwable e) {
-			System.out.println(e);
-		}
-		System.out.println("Returning empty (catch)");
-		return "";
 	}
 }
