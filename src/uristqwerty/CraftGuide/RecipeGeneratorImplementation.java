@@ -156,9 +156,9 @@ public class RecipeGeneratorImplementation implements RecipeGenerator
 		{
 			if(recipe instanceof ShapedRecipes)
 			{
-				int width = (Integer)CommonUtilities.getPrivateValue(ShapedRecipes.class, (ShapedRecipes)recipe, "b", "recipeWidth", "field_77576_b");
-				int height = (Integer)CommonUtilities.getPrivateValue(ShapedRecipes.class, (ShapedRecipes)recipe, "c", "recipeHeight", "field_77577_c");
-				Object[] items = (Object[])CommonUtilities.getPrivateValue(ShapedRecipes.class, (ShapedRecipes)recipe, "d", "recipeItems", "field_77574_d");
+				int width = (Integer)CommonUtilities.getPrivateValue(ShapedRecipes.class, (ShapedRecipes)recipe, "b", "recipeWidth", "field_77576_b", "field_4438");
+				int height = (Integer)CommonUtilities.getPrivateValue(ShapedRecipes.class, (ShapedRecipes)recipe, "c", "recipeHeight", "field_77577_c", "field_4439");
+				Object[] items = (Object[])CommonUtilities.getPrivateValue(ShapedRecipes.class, (ShapedRecipes)recipe, "d", "recipeItems", "field_77574_d", "field_4440");
 
 				if(allowSmallGrid && width < 3 && height < 3)
 				{
@@ -171,7 +171,7 @@ public class RecipeGeneratorImplementation implements RecipeGenerator
 			}
 			else if(recipe instanceof ShapelessRecipes)
 			{
-				List items = (List)CommonUtilities.getPrivateValue(ShapelessRecipes.class, (ShapelessRecipes)recipe, "b", "recipeItems", "field_77579_b");
+				List items = (List)CommonUtilities.getPrivateValue(ShapelessRecipes.class, (ShapelessRecipes)recipe, "b", "recipeItems", "field_77579_b", "field_4443");
 				return getCraftingShapelessRecipe(items, ((ShapelessRecipes)recipe).getRecipeOutput());
 			}
 			else if(forgeExt != null && forgeExt.matchesType(recipe))

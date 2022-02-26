@@ -45,7 +45,7 @@ public class CraftGuideClient_Vanilla extends CraftGuideClient
 
 		try
 		{
-			TexturePackList texturePackList = (TexturePackList)CommonUtilities.getPrivateValue(RenderEngine.class, renderEngine, "g", "texturePack", "field_78366_k");
+			TexturePackList texturePackList = (TexturePackList)CommonUtilities.getPrivateValue(RenderEngine.class, renderEngine, "g", "texturePack", "field_78366_k", "field_1981");
 			return texturePackList.getSelectedTexturePack();
 		}
 		catch(SecurityException e)
@@ -75,7 +75,7 @@ public class CraftGuideClient_Vanilla extends CraftGuideClient
 		{
 			try
 			{
-				isDrawing = CommonUtilities.getPrivateField(Tessellator.class, "z", "isDrawing", "field_78415_z");
+				isDrawing = CommonUtilities.getPrivateField(Tessellator.class, "z", "isDrawing", "field_78415_z", "field_1970");
 			}
 			catch(NoSuchFieldException e)
 			{

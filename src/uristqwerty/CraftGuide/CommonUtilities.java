@@ -209,7 +209,7 @@ public class CommonUtilities
 	{
 		try
 		{
-			itemDamageField = getPrivateField(ItemStack.class, "itemDamage", "field_77991_e", "e");
+			itemDamageField = getPrivateField(ItemStack.class, "itemDamage", "field_77991_e", "e", "field_4380");
 		}
 		catch(NoSuchFieldException e)
 		{
