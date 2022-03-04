@@ -44,7 +44,7 @@ public class Image implements Texture
 					Method getTexture;
 					try
 					{
-						getTexture = CommonUtilities.getPrivateMethod(RenderEngine.class, new String[]{"f", "getTexture", "func_78341_b"}, String.class);
+						getTexture = CommonUtilities.getPrivateMethod(RenderEngine.class, new String[]{"f", "getTexture", "func_78341_b", "method_1428"}, String.class);
 						image.texID = (Integer)getTexture.invoke(Minecraft.getMinecraft().renderEngine, entry.getKey());
 					}
 					catch(NoSuchMethodException e)

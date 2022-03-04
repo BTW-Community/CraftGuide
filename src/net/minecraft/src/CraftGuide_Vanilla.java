@@ -139,8 +139,8 @@ public class CraftGuide_Vanilla implements CraftGuideLoaderSide
 				{
 					int x = Mouse.getX() * screen.width / mc.displayWidth;
 					int y = screen.height - (Mouse.getY() * screen.height / mc.displayHeight) - 1;
-					int left = (Integer)CommonUtilities.getPrivateValue(GuiContainer.class, (GuiContainer)screen, "e", "n", "field_74198_m", "guiLeft");
-					int top = (Integer)CommonUtilities.getPrivateValue(GuiContainer.class, (GuiContainer)screen, "o", "field_74197_n", "guiTop");
+					int left = (Integer)CommonUtilities.getPrivateValue(GuiContainer.class, (GuiContainer)screen, "e", "n", "field_74198_m", "guiLeft", "field_1350");
+					int top = (Integer)CommonUtilities.getPrivateValue(GuiContainer.class, (GuiContainer)screen, "o", "field_74197_n", "guiTop", "field_1351");
 					openRecipe((GuiContainer)screen, x - left, y - top);
 				}
 				catch(IllegalArgumentException e)
