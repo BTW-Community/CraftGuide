@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "craftguide",
+  "version": "${version}",
+
+  "name": "Craft Guide",
+  "description": "Adds a crafting guide to Better Than Wolves. Press G to get started!",
+  "authors": [
+    "Uristqwerty",
+    "IssaMe",
+    "Arminias"
+  ],
+  "contact": {
+    "homepage": "https://github.com/BTW-Community/CraftGuide",
+    "sources": "https://github.com/BTW-Community/CraftGuide"
+  },
+
+  "license": "CC0-1.0",
+  "icon": "craftguide/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "init": [
+    ],
+    "preLaunch": [
+    ]
+  },
+  "mixins": [
+    "modid.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.7.4"
+  },
+  "suggests": {
+    "flamingo": "*"
+  }
+}
