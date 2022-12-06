@@ -1,130 +1,100 @@
 package uristqwerty.CraftGuide.recipes;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.PotionHelper;
 import uristqwerty.CraftGuide.CommonUtilities;
 import uristqwerty.CraftGuide.CraftGuide;
 import uristqwerty.CraftGuide.DefaultRecipeTemplate;
-import uristqwerty.CraftGuide.api.CraftGuideAPIObject;
-import uristqwerty.CraftGuide.api.ItemSlot;
-import uristqwerty.CraftGuide.api.RecipeGenerator;
-import uristqwerty.CraftGuide.api.RecipeProvider;
-import uristqwerty.CraftGuide.api.RecipeTemplate;
-import uristqwerty.CraftGuide.api.Slot;
-import uristqwerty.CraftGuide.api.SlotType;
+import uristqwerty.CraftGuide.api.*;
 import uristqwerty.gui_craftguide.texture.DynamicTexture;
 import uristqwerty.gui_craftguide.texture.TextureClip;
 
-public class BrewingRecipes extends CraftGuideAPIObject implements RecipeProvider
-{
-	private final Slot[] slots = new ItemSlot[]{
-		new ItemSlot(12, 12, 16, 16).setSlotType(SlotType.INPUT_SLOT),
-		new ItemSlot(12, 30, 16, 16).setSlotType(SlotType.INPUT_SLOT),
-		new ItemSlot(49, 21, 16, 16).setSlotType(SlotType.OUTPUT_SLOT),
-	};
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
-	@Override
-	public void generateRecipes(RecipeGenerator generator)
-	{
-		ItemStack stack = new ItemStack(Item.brewingStand);
-		List<ItemStack[]> recipes = getRecipes();
+public class BrewingRecipes extends CraftGuideAPIObject implements RecipeProvider {
+    private final Slot[] slots = new ItemSlot[]{
+            new ItemSlot(12, 12, 16, 16).setSlotType(SlotType.INPUT_SLOT),
+            new ItemSlot(12, 30, 16, 16).setSlotType(SlotType.INPUT_SLOT),
+            new ItemSlot(49, 21, 16, 16).setSlotType(SlotType.OUTPUT_SLOT),
+    };
+
+    @Override
+    public void generateRecipes(RecipeGenerator generator) {
+        ItemStack stack = new ItemStack(Item.brewingStand);
+        List<ItemStack[]> recipes = getRecipes();
 		/*RecipeTemplate template = generator.createRecipeTemplate(slots, stack,
 			"/gui/BrewGuide.png", 1, 1, 82, 1);*/
 
-		RecipeTemplate template = new DefaultRecipeTemplate(
-				slots,
-				stack,
-				new TextureClip(
-						DynamicTexture.instance("brew_recipe_background"),
-						1, 1, 79, 58),
-				new TextureClip(
-						DynamicTexture.instance("brew_recipe_background"),
-						82, 1, 79, 58));
+        RecipeTemplate template = new DefaultRecipeTemplate(
+                slots,
+                stack,
+                new TextureClip(
+                        DynamicTexture.instance("brew_recipe_background"),
+                        1, 1, 79, 58),
+                new TextureClip(
+                        DynamicTexture.instance("brew_recipe_background"),
+                        82, 1, 79, 58));
 
-		if(CraftGuide.hideMundanePotionRecipes)
-		{
-			Iterator<ItemStack[]> iterator = recipes.iterator();
+        if (CraftGuide.hideMundanePotionRecipes) {
+            recipes.removeIf(recipe -> recipe[2] != null && CommonUtilities.getItemDamage(recipe[2]) == 8192);
+        }
 
-			while(iterator.hasNext())
-			{
-				ItemStack[] recipe = iterator.next();
+        for (ItemStack[] recipe : recipes) {
+            generator.addRecipe(template, recipe);
+        }
 
-				if(recipe[2] != null && CommonUtilities.getItemDamage(recipe[2]) == 8192)
-				{
-					iterator.remove();
-				}
-			}
-		}
+        generator.setDefaultTypeVisibility(stack, false);
+    }
 
-		for(ItemStack[] recipe: recipes)
-		{
-			generator.addRecipe(template, recipe);
-		}
+    private List<ItemStack[]> getRecipes() {
+        List<Item> ingredients = getIngredients();
 
-		generator.setDefaultTypeVisibility(stack, false);
-	}
+        ItemStack water = new ItemStack(Item.potion);
+        List<ItemStack[]> potionRecipes = new LinkedList<ItemStack[]>();
+        Set<Integer> done = new HashSet<Integer>();
+        done.add(0);
 
-	private List<ItemStack[]> getRecipes()
-	{
-		List<Item> ingredients = getIngredients();
+        addRecipesForPotion(potionRecipes, water, ingredients, done);
 
-		ItemStack water = new ItemStack(Item.potion);
-		List<ItemStack[]> potionRecipes = new LinkedList<ItemStack[]>();
-		Set<Integer> done = new HashSet<Integer>();
-		done.add(0);
+        return potionRecipes;
+    }
 
-		addRecipesForPotion(potionRecipes, water, ingredients, done);
+    private void addRecipesForPotion(List<ItemStack[]> potionRecipes, ItemStack potion, List<Item> ingredients, Set<Integer> done) {
+        List<ItemStack> next = new LinkedList<ItemStack>();
 
-		return potionRecipes;
-	}
+        for (Item ingredient : ingredients) {
+            int result = PotionHelper.applyIngredient(CommonUtilities.getItemDamage(potion), ingredient.getPotionEffect());
 
-	private void addRecipesForPotion(List<ItemStack[]> potionRecipes, ItemStack potion, List<Item> ingredients, Set<Integer> done)
-	{
-		List<ItemStack> next = new LinkedList<ItemStack>();
+            if (result != 0 && result != CommonUtilities.getItemDamage(potion)) {
+                ItemStack output = new ItemStack(Item.potion);
+                output.setItemDamage(result);
+                potionRecipes.add(new ItemStack[]{potion, new ItemStack(ingredient), output});
 
-		for(Item ingredient: ingredients)
-		{
-			int result = PotionHelper.applyIngredient(CommonUtilities.getItemDamage(potion), ingredient.getPotionEffect());
+                if (!done.contains(result)) {
+                    next.add(output);
+                    done.add(result);
+                }
+            }
+        }
 
-			if(result != 0 && result != CommonUtilities.getItemDamage(potion))
-			{
-				ItemStack output = new ItemStack(Item.potion);
-				output.setItemDamage(result);
-				potionRecipes.add(new ItemStack[] {potion, new ItemStack(ingredient), output});
+        for (ItemStack nextPotion : next) {
+            addRecipesForPotion(potionRecipes, nextPotion, ingredients, done);
+        }
+    }
 
-				if(!done.contains(result))
-				{
-					next.add(output);
-					done.add(result);
-				}
-			}
-		}
+    private List<Item> getIngredients() {
+        List<Item> ingredients = new LinkedList<Item>();
 
-		for(ItemStack nextPotion: next)
-		{
-			addRecipesForPotion(potionRecipes, nextPotion, ingredients, done);
-		}
-	}
+        for (Item item : Item.itemsList) {
+            if (item != null && item.isPotionIngredient()) {
+                ingredients.add(item);
+            }
+        }
 
-	private List<Item> getIngredients()
-	{
-		List<Item> ingredients = new LinkedList<Item>();
-
-		for(Item item: Item.itemsList)
-		{
-			if(item != null && item.isPotionIngredient())
-			{
-				ingredients.add(item);
-			}
-		}
-
-		return ingredients;
-	}
+        return ingredients;
+    }
 }
