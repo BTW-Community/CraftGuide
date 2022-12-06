@@ -25,14 +25,14 @@ public class AnvilRecipes extends CraftGuideAPIObject implements RecipeProvider 
                 ItemStack[] crafting = new ItemStack[slots.length];
 
                 if (recipe instanceof ShapelessRecipes) {
-                    ItemStack[] inputs = (ItemStack[]) getPrivateField(ShapelessRecipes.class, recipe, "recipeItems", "b");
+                    ItemStack[] inputs = (ItemStack[]) getPrivateField(ShapelessRecipes.class, recipe, "recipeItems", "field_4440");
 
                     System.arraycopy(inputs, 0, crafting, 0, inputs.length);
                 } else {
-                    ItemStack[] inputs = (ItemStack[]) getPrivateField(ShapedRecipes.class, recipe, "recipeItems", "d");
+                    ItemStack[] inputs = (ItemStack[]) getPrivateField(ShapedRecipes.class, recipe, "recipeItems", "field_4440");
 
-                    int width = (Integer) getPrivateField(ShapedRecipes.class, recipe, "recipeWidth", "b");
-                    int height = (Integer) getPrivateField(ShapedRecipes.class, recipe, "recipeHeight", "c");
+                    int width = (Integer) getPrivateField(ShapedRecipes.class, recipe, "recipeWidth", "field_4438");
+                    int height = (Integer) getPrivateField(ShapedRecipes.class, recipe, "recipeHeight", "field_4439");
 
                     for (int row = 0; row < height; row++) {
                         if (width >= 0) System.arraycopy(inputs, row * width, crafting, row * 4, width);
