@@ -77,6 +77,7 @@ public class Image implements Texture
 			return err;
 		}
 
+		filename = "/craftguide" + filename;
 		Image image = jarCache.get(filename);
 
 		if(image == null)

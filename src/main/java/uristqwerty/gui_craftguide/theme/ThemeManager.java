@@ -279,7 +279,7 @@ public class ThemeManager
 			debug("            Searching classpath for '" + source + "'");
 			try
 			{
-				if(CraftGuideClient.getTexturePack().getResourceAsStream(source) != null)
+				if(CraftGuideClient.getTexturePack().getResourceAsStream("/craftguide" + source) != null)
 				{
 					debug("              Found.");
 					return true;
