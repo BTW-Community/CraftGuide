@@ -3,10 +3,10 @@ package craftguide;
 import btw.AddonHandler;
 import btw.BTWAddon;
 
-public class CraftGuide extends BTWAddon {
-    private static CraftGuide instance;
+public class Main extends BTWAddon {
+    private static Main instance;
 
-    private CraftGuide() {
+    private Main() {
         super("Craft Guide", "0.1.0", "CG");
     }
 
@@ -15,9 +15,9 @@ public class CraftGuide extends BTWAddon {
         AddonHandler.logMessage(this.getName() + " Version " + this.getVersionString() + " Initializing...");
     }
 
-    public static CraftGuide getInstance() {
+    public static Main getInstance() {
         if (instance == null)
-            instance = new CraftGuide();
+            instance = new Main();
         return instance;
     }
 }
