@@ -25,7 +25,8 @@ public class CraftGuide_Vanilla implements CraftGuideLoaderSide
 	{
 		if(name.equals("BTW"))
 		{
-			return isClassLoaded(getClassPackagePrefix()+"FCBetterThanWolves");
+			return true;
+//			return isClassLoaded(getClassPackagePrefix()+"FCBetterThanWolves");
 		}
 		else if(name.equals("Forge"))
 		{

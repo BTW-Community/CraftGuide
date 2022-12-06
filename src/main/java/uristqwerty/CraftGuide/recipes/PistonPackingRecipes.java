@@ -20,7 +20,7 @@ public class PistonPackingRecipes extends CraftGuideAPIObject implements RecipeP
 	public void generateRecipes(RecipeGenerator generator) {
 		
 		try {
-			Field recipesField = PistonPackingRecipe.class.getDeclaredField("recipes");
+			Field recipesField = PistonPackingCraftingManager.class.getDeclaredField("recipes");
 			recipesField.setAccessible(true);
 			ArrayList<PistonPackingRecipe> recipes = (ArrayList<PistonPackingRecipe>) recipesField.get(PistonPackingCraftingManager.instance);
 			

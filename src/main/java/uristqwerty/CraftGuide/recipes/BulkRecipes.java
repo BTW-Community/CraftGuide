@@ -30,7 +30,7 @@ public class BulkRecipes extends CraftGuideAPIObject implements RecipeProvider {
 	@Override
 	public void generateRecipes(RecipeGenerator generator) {
 		try {
-			Field recipesField = BulkCraftingManager.class.getDeclaredField("m_recipes");
+			Field recipesField = BulkCraftingManager.class.getDeclaredField("recipes");
 			recipesField.setAccessible(true);
 			List<BulkRecipe> recipes = (List<BulkRecipe>) recipesField.get(craftingManager);
 			

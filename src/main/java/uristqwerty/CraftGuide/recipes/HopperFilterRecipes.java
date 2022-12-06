@@ -25,7 +25,7 @@ public class HopperFilterRecipes extends CraftGuideAPIObject implements RecipePr
 		RecipeTemplate template = generator.createRecipeTemplate(slots, hopper).setSize(3 * 18 + 6, 2 * 18 + 4);
 		
 		try {
-			Field recipesField = HopperFilterRecipe.class.getDeclaredField("recipes");
+			Field recipesField = HopperFilteringCraftingManager.class.getDeclaredField("recipes");
 			recipesField.setAccessible(true);
 			ArrayList<HopperFilterRecipe> recipes = (ArrayList<HopperFilterRecipe>) recipesField.get(HopperFilteringCraftingManager.instance);
 			
