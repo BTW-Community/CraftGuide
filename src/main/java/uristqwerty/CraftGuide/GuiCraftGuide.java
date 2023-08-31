@@ -6,6 +6,7 @@ import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.ItemStack;
 
+import net.minecraft.src.StatCollector;
 import org.lwjgl.input.Keyboard;
 
 import uristqwerty.CraftGuide.api.SlotType;
@@ -110,7 +111,7 @@ public class GuiCraftGuide extends Gui
 					generateRecipeTab(texture, buttonTemplate)
 						.anchor(AnchorPoint.TOP_LEFT, AnchorPoint.BOTTOM_RIGHT),
 					(GuiButton)new GuiButton(6, 6, 28, 28, buttonTemplate)
-						.setToolTip("Recipe list")
+						.setToolTip(StatCollector.translateToLocal("craftguide.list.recipe"))
 						.addElement(new GuiElement(0, 0, 28,28)
 							.setBackground(new TextureClip(texture, 1, 76, 28,28))
 							.setClickable(false)))
@@ -118,7 +119,7 @@ public class GuiCraftGuide extends Gui
 					generateTypeTab(texture, buttonTemplate)
 						.anchor(AnchorPoint.TOP_LEFT, AnchorPoint.BOTTOM_RIGHT),
 					(GuiButton)new GuiButton(34, 6, 28, 28, buttonTemplate)
-						.setToolTip("Show/Hide recipes by crafting type")
+						.setToolTip(StatCollector.translateToLocal("craftguide.list.type"))
 						.addElement(new GuiElement(0, 0, 28,28)
 							.setBackground(new TextureClip(texture, 29, 76, 28,28))
 							.setClickable(false)))
@@ -162,7 +163,7 @@ public class GuiCraftGuide extends Gui
 					.addButtonListener(new FilterToggle(SlotType.INPUT_SLOT))
 					.anchor(AnchorPoint.BOTTOM_LEFT)
 					.addElement(
-							new GuiText(15, 3, CraftGuide.getTranslation("filter_type.input"), 0xff000000)));
+							new GuiText(15, 3, StatCollector.translateToLocal("craftguide.filter_type.input"), 0xff000000)));
 
 
 		recipeTab.addElement(
@@ -171,7 +172,7 @@ public class GuiCraftGuide extends Gui
 					.addButtonListener(new FilterToggle(SlotType.OUTPUT_SLOT))
 					.anchor(AnchorPoint.BOTTOM_LEFT)
 					.addElement(
-							new GuiText(15, 3, CraftGuide.getTranslation("filter_type.output"), 0xff000000)));
+							new GuiText(15, 3, StatCollector.translateToLocal("craftguide.filter_type.output"), 0xff000000)));
 
 		recipeTab.addElement(
 				new ToggleButton(8, 130, 13, 13, toggleTemplate)
@@ -179,16 +180,16 @@ public class GuiCraftGuide extends Gui
 					.addButtonListener(new FilterToggle(SlotType.MACHINE_SLOT))
 					.anchor(AnchorPoint.BOTTOM_LEFT)
 					.addElement(
-							new GuiText(15, 3, CraftGuide.getTranslation("filter_type.machine"), 0xff000000)));
+							new GuiText(15, 3, StatCollector.translateToLocal("craftguide.filter_type.machine"), 0xff000000)));
 
 		GuiButton clearButton =
-			(GuiButton) new GuiButton(8, initialWindowHeight - 18, 50, 13, buttonTemplate, "Clear")
+			(GuiButton) new GuiButton(8, initialWindowHeight - 18, 50, 13, buttonTemplate, StatCollector.translateToLocal("craftguide.clear"))
 				.anchor(AnchorPoint.BOTTOM_LEFT);
 
 		recipeTab.addElement(clearButton);
 
 		recipeTab.addElement(
-			new GuiText(9, 151, CraftGuide.getTranslation("filter"), 0xff000000)
+			new GuiText(9, 151, StatCollector.translateToLocal("craftguide.filter"), 0xff000000)
 				.anchor(AnchorPoint.BOTTOM_LEFT));
 
 		recipeTab.addElement(
@@ -208,11 +209,11 @@ public class GuiCraftGuide extends Gui
 			.setClickable(false);
 
 		GuiButton backButton =
-			(GuiButton) new GuiButton(8, 166, 50, 13, buttonTemplate, "Back")
+			(GuiButton) new GuiButton(8, 166, 50, 13, buttonTemplate, StatCollector.translateToLocal("craftguide.back"))
 				.anchor(AnchorPoint.BOTTOM_LEFT);
 
 		GuiButton itemListButton =
-			(GuiButton) new GuiButton(8, 166, 50, 13, buttonTemplate, "Set item")
+			(GuiButton) new GuiButton(8, 166, 50, 13, buttonTemplate, StatCollector.translateToLocal("craftguide.set_item"))
 				.anchor(AnchorPoint.BOTTOM_LEFT);
 
 		itemListArea.addElement(backButton);
@@ -256,7 +257,7 @@ public class GuiCraftGuide extends Gui
 		itemListArea.addElement(filterGrid);
 
 		itemListArea.addElement(
-			new GuiText(68, 183, "Search", 0xff000000)
+			new GuiText(68, 183, StatCollector.translateToLocal("craftguide.search"), 0xff000000)
 				.anchor(AnchorPoint.BOTTOM_LEFT));
 
 		itemListArea.addElement(
@@ -289,7 +290,7 @@ public class GuiCraftGuide extends Gui
 		}
 
 		itemListArea.addElement(
-			new GuiButton(initialWindowWidth - 54, 180, 32, 13, buttonTemplate, "Clear")
+			new GuiButton(initialWindowWidth - 54, 180, 32, 13, buttonTemplate, StatCollector.translateToLocal("craftguide.clear"))
 				.addButtonListener(new ClearButtonListener(searchInput))
 				.anchor(AnchorPoint.BOTTOM_RIGHT));
 

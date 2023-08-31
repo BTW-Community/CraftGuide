@@ -116,7 +116,7 @@ public class CraftGuide_Vanilla implements CraftGuideLoaderSide
 
 	public void initKeybind()
 	{
-		keyBinding = new KeyBinding("Open CraftGuide", Keyboard.KEY_G);
+		keyBinding = new KeyBinding(StatCollector.translateToLocal("key.craftguide.open"), Keyboard.KEY_G);
 		GameSettings settings = Minecraft.getMinecraft().gameSettings;
 		KeyBinding[] keyBindings = settings.keyBindings;
 		keyBindings = Arrays.copyOf(keyBindings, keyBindings.length + 1);

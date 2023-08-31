@@ -24,3 +24,5 @@ reobfuscated
 .idea/dictionaries
 .idea/libraries
 .idea/jarRepositories.xml
+.idea/misc.xml
+.idea/modules.xml

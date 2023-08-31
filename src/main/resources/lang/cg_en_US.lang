@@ -1,0 +1,18 @@
+key.craftguide.open=Open CraftGuide
+
+craftguide.filter_type.input=Input
+craftguide.filter_type.output=Output
+craftguide.filter_type.machine=Machine
+craftguide.filter=Filter
+
+craftguide.list.recipe=Recipe List
+craftguide.list.type=Recipe Type
+
+craftguide.clear=Clear
+craftguide.back=Back
+craftguide.set_item=Set Item
+craftguide.search=Search
+
+craftguide.recipe.show=Show recipes of this type
+craftguide.recipe.hide=Hide recipes of this type
+craftguide.recipe.show_only=Show only recipes of this type

@@ -269,28 +269,4 @@ public class CraftGuide
 
 		return dir;
 	}
-
-	public static String getTranslation(String string)
-	{
-		if(string.equals("filter_type.input"))
-		{
-			return "Input";
-		}
-		else if(string.equals("filter_type.output"))
-		{
-			return "Output";
-		}
-		else if(string.equals("filter_type.machine"))
-		{
-			return "Machine";
-		}
-		else if(string.equals("filter"))
-		{
-			return "Filter";
-		}
-		else
-		{
-			return null;
-		}
-	}
 }
