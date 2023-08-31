@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import net.minecraft.src.StatCollector;
 import uristqwerty.CraftGuide.CraftType;
 import uristqwerty.CraftGuide.RecipeCache;
 import uristqwerty.CraftGuide.client.ui.Rendering.FloatingItemText;
@@ -220,7 +221,7 @@ public class CraftTypeDisplay extends GuiScrollableGrid implements IRecipeCacheL
 		super.draw();
 		if(toolTipText != "")
 		{
-			toolTip.setText(toolTipText);
+			toolTip.setText(StatCollector.translateToLocal(toolTipText));
 			render(toolTipOverlay);
 		}
 	}
@@ -241,15 +242,15 @@ public class CraftTypeDisplay extends GuiScrollableGrid implements IRecipeCacheL
 					switch(relX / 29)
 					{
 						case 0:
-							toolTipText = "Show recipes of this type";
+							toolTipText = "craftguide.recipe.show";
 							break;
 
 						case 1:
-							toolTipText = "Hide recipes of this type";
+							toolTipText = "craftguide.recipe.hide";
 							break;
 
 						case 2:
-							toolTipText = "Show only recipes of this type";
+							toolTipText = "craftguide.recipe.show_only";
 					}
 				}
 			}

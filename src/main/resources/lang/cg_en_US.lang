@@ -1,0 +1,18 @@
+key.craftguide.open=Open CraftGuidea
+
+craftguide.filter_type.input=Inputa
+craftguide.filter_type.output=Outputa
+craftguide.filter_type.machine=Machinea
+craftguide.filter=Filtera
+
+craftguide.list.recipe=Recipe Lista
+craftguide.list.type=Recipe Typea
+
+craftguide.clear=Cleara
+craftguide.back=Backa
+craftguide.set_item=Set Itema
+craftguide.search=Searcha
+
+craftguide.recipe.show=Show recipes of this typea
+craftguide.recipe.hide=Hide recipes of this typea
+craftguide.recipe.show_only=Show only recipes of this typea
