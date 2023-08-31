@@ -7,7 +7,7 @@ public class CraftGuideAddon extends BTWAddon {
     private static CraftGuideAddon instance;
 
     private CraftGuideAddon() {
-        super("Craft Guide", "3.0.0", "CG");
+        super("Craft Guide", "3.0.1", "CG");
     }
 
     @Override
