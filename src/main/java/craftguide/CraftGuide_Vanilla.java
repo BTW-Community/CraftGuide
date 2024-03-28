@@ -126,7 +126,7 @@ public class CraftGuide_Vanilla implements CraftGuideLoaderSide
 
 	public void checkKeybind()
 	{
-		if(keyBinding.pressed && CraftGuide.enableKeybind)
+		if(Keyboard.isKeyDown(keyBinding.keyCode) && CraftGuide.enableKeybind)
 		{
 			Minecraft mc = Minecraft.getMinecraft();
 			GuiScreen screen = mc.currentScreen;
